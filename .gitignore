@@ -1,0 +1,17 @@
+**/.idea
+**/.vscode
+**/.history
+**/*.iml
+**/*.lock
+**/*.rs.bk
+**/*.xz
+**/*.gz
+**/rls*.log
+**/target
+**/obsolete
+**/untracked
+**/tarpaulin-report.html
+**/evaluate.state
+**/result.*txt
+**/result.*csv
+**/result.*json

@@ -1,0 +1,81 @@
+bench = [
+    { harness = false, name = "litemap" },
+    { harness = false, name = "std_hashset_adler32" },
+    { harness = false, name = "std_hashset_ahasher" },
+    { harness = false, name = "std_hashset_bricolage" },
+    { harness = false, name = "std_hashset_djb2hasher" },
+    { harness = false, name = "std_hashset_fnv1ahasher" },
+    { harness = false, name = "std_hashset_foldhash" },
+    { harness = false, name = "std_hashset_fxhasher64" },
+    { harness = false, name = "std_hashset_hashhasher" },
+    { harness = false, name = "std_hashset_inthasher" },
+    { harness = false, name = "std_hashset_lookup3hasher" },
+    { harness = false, name = "std_hashset_oaathasher" },
+    { harness = false, name = "std_hashset_rapidhasher" },
+    { harness = false, name = "std_hashset_sdbmhasher" },
+    { harness = false, name = "std_hashset_siphasher" },
+    { harness = false, name = "std_hashset_siphasher13" },
+    { harness = false, name = "std_hashset_spookyhasher" },
+    { harness = false, name = "std_hashset_wyhash" },
+    { harness = false, name = "std_hashset_zwohash" },
+    { harness = false, name = "vecmap" },
+    { harness = false, name = "vector_map" },
+]
+
+[package]
+name                = "hasherbench"
+version             = "0.0.3"
+edition             = "2024"
+authors             = ["oshua1 <oshua-github@oms.linux-one.org>"]
+publish             = false
+keywords            = ["benchmark","hasher","hashset"]
+description         = "Benchmark several kinds of Hashers, key types and HashSets"
+rust-version        = "1.88"
+
+[dependencies]
+adler2              = { version = "=2.0.1" }
+ahash               = { version = "=0.8.12" }
+criterion           = { version = "=3.0.1", package = "criterion2", default-features = false }
+foldhash            = { version = "0.1.5" }
+hash_hasher         = { version = "=2.0.4" }
+hashers             = { version = "=1.0.1" }
+integer-hasher      = { version = "0.1.1" }
+litemap             = { version = "0.8.0" }
+paste               = { version = "=1.0.15" }
+rapidhash           = { version = "=1.4.0" }
+ritehash            = { version = "0.2.0" }
+vecmap-rs           = { version = "0.2.3" }
+vector-map          = { version = "=1.0.2" }
+wyhash              = { version = "0.6.0" }
+zwohash             = { version = "0.1.2" }
+
+[dev-dependencies]
+
+[profile.dev]
+opt-level           = 1
+lto                 = false
+debug               = true
+debug-assertions    = true
+codegen-units       = 4
+panic               = 'unwind'
+incremental         = true
+overflow-checks     = true
+
+[profile.test]
+opt-level           = 'z'
+lto                 = false
+debug               = false
+debug-assertions    = true
+codegen-units       = 4
+incremental         = true
+overflow-checks     = true
+
+[profile.release]
+opt-level           = 3
+lto                 = true
+debug               = false
+debug-assertions    = false
+codegen-units       = 1
+panic               = 'abort'
+incremental         = false
+overflow-checks     = true
