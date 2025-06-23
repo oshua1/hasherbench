@@ -1,0 +1,3 @@
+#!/bin/sh
+echo Refining benchmark results in file target/results.txt. Takes ca. 20..60 sec...
+find target/ -type d -name baseline -exec sh -c "cat {}/benchmark.json | jq -j ".full_id"; echo -n \"\t\"; cat {}/estimates.json | jq ".median.point_estimate"" \; | awk -e '{ split ($1, idarr, "_"); iterations=idarr[2]; printf ("%-60s%11.3f micros/run; %7d nanos/iter\n", $1, $2 / 1000, $2 / iterations); }' | sort >target/results.txt
