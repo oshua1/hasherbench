@@ -1,4 +1,22 @@
 bench = [
+    { harness = false, name = "hashbrown_adler32" },
+    { harness = false, name = "hashbrown_ahasher" },
+    { harness = false, name = "hashbrown_bricolage" },
+    { harness = false, name = "hashbrown_djb2hasher" },
+    { harness = false, name = "hashbrown_fnv1ahasher" },
+    { harness = false, name = "hashbrown_foldhash" },
+    { harness = false, name = "hashbrown_fxhasher64" },
+    { harness = false, name = "hashbrown_hashhasher" },
+    { harness = false, name = "hashbrown_inthasher" },
+    { harness = false, name = "hashbrown_lookup3hasher" },
+    { harness = false, name = "hashbrown_oaathasher" },
+    { harness = false, name = "hashbrown_rapidhasher" },
+    { harness = false, name = "hashbrown_sdbmhasher" },
+    { harness = false, name = "hashbrown_siphasher" },
+    { harness = false, name = "hashbrown_siphasher13" },
+    { harness = false, name = "hashbrown_spookyhasher" },
+    { harness = false, name = "hashbrown_wyhash" },
+    { harness = false, name = "hashbrown_zwohash" },
     { harness = false, name = "litemap" },
     { harness = false, name = "std_hashset_adler32" },
     { harness = false, name = "std_hashset_ahasher" },
@@ -37,6 +55,7 @@ adler2              = { version = "=2.0.1" }
 ahash               = { version = "=0.8.12" }
 criterion           = { version = "=3.0.1", package = "criterion2", default-features = false }
 foldhash            = { version = "0.1.5" }
+hashbrown           = { version = "0.15.4" }
 hash_hasher         = { version = "=2.0.4" }
 hashers             = { version = "=1.0.1" }
 integer-hasher      = { version = "0.1.1" }
