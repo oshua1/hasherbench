@@ -17,26 +17,8 @@
 
 mod common;
 
-use core::hash::BuildHasherDefault;
 use std::collections::HashSet;
-
 use adler2::Adler32;
-
 use common::ProduceKey;
-use common::String8;
-use common::String16;
-use common::String32;
-use common::StringSlow;
 
-criterion::criterion_main!(std_hashset);
-
-create_benchmark! (std_hashset,
-    std_hashset, HashSet<u32,BuildHasherDefault<Adler32>>,          u32,        adler32,    Adler32,
-    std_hashset, HashSet<usize,BuildHasherDefault<Adler32>>,        usize,      adler32,    Adler32,
-    std_hashset, HashSet<u128,BuildHasherDefault<Adler32>>,         u128,       adler32,    Adler32,
-    std_hashset, HashSet<String,BuildHasherDefault<Adler32>>,       String,     adler32,    Adler32,
-    std_hashset, HashSet<String8,BuildHasherDefault<Adler32>>,      String8,    adler32,    Adler32,
-    std_hashset, HashSet<String16,BuildHasherDefault<Adler32>>,     String16,   adler32,    Adler32,
-    std_hashset, HashSet<String32,BuildHasherDefault<Adler32>>,     String32,   adler32,    Adler32,
-    std_hashset, HashSet<StringSlow,BuildHasherDefault<Adler32>>,   StringSlow, adler32,    Adler32
-);
+create_benchmark! (std_hashset, adler32, Adler32);

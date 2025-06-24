@@ -1,4 +1,3 @@
-#![allow(internal_features, deprecated, reason = "Just benchmarking")]
 #![allow(
     unused_crate_dependencies,
     reason = "Every benchmark module tests single collection; others remain unused"
@@ -18,26 +17,8 @@
 
 mod common;
 
-use core::hash::BuildHasherDefault;
 use std::collections::HashSet;
-
 use hashers::oz::SDBMHasher;
-
 use common::ProduceKey;
-use common::String8;
-use common::String16;
-use common::String32;
-use common::StringSlow;
 
-criterion::criterion_main!(std_hashset);
-
-create_benchmark! (std_hashset,
-    std_hashset, HashSet<u32,BuildHasherDefault<SDBMHasher>>,       u32,        sdbmhasher, SDBMHasher,
-    std_hashset, HashSet<usize,BuildHasherDefault<SDBMHasher>>,     usize,      sdbmhasher, SDBMHasher,
-    std_hashset, HashSet<u128,BuildHasherDefault<SDBMHasher>>,      u128,       sdbmhasher, SDBMHasher,
-    std_hashset, HashSet<String,BuildHasherDefault<SDBMHasher>>,    String,     sdbmhasher, SDBMHasher,
-    std_hashset, HashSet<String8,BuildHasherDefault<SDBMHasher>>,   String8,    sdbmhasher, SDBMHasher,
-    std_hashset, HashSet<String16,BuildHasherDefault<SDBMHasher>>,  String16,   sdbmhasher, SDBMHasher,
-    std_hashset, HashSet<String32,BuildHasherDefault<SDBMHasher>>,  String32,   sdbmhasher, SDBMHasher,
-    std_hashset, HashSet<StringSlow,BuildHasherDefault<SDBMHasher>>,StringSlow, sdbmhasher, SDBMHasher
-);
+create_benchmark! (std_hashset, sdbmhasher, SDBMHasher);

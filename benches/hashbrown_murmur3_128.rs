@@ -17,26 +17,8 @@
 
 mod common;
 
-use core::hash::BuildHasherDefault;
-
 use hashbrown::HashSet;
 use highhash::murmur::Murmur3Hasher128;
-
 use common::ProduceKey;
-use common::String8;
-use common::String16;
-use common::String32;
-use common::StringSlow;
 
-criterion::criterion_main!(hashbrown);
-
-create_benchmark! (hashbrown,
-    hashbrown, HashSet<u32,BuildHasherDefault<Murmur3Hasher128>>,       u32,        murmur3_128,    Murmur3Hasher128,
-    hashbrown, HashSet<usize,BuildHasherDefault<Murmur3Hasher128>>,     usize,      murmur3_128,    Murmur3Hasher128,
-    hashbrown, HashSet<u128,BuildHasherDefault<Murmur3Hasher128>>,      u128,       murmur3_128,    Murmur3Hasher128,
-    hashbrown, HashSet<String,BuildHasherDefault<Murmur3Hasher128>>,    String,     murmur3_128,    Murmur3Hasher128,
-    hashbrown, HashSet<String8,BuildHasherDefault<Murmur3Hasher128>>,   String8,    murmur3_128,    Murmur3Hasher128,
-    hashbrown, HashSet<String16,BuildHasherDefault<Murmur3Hasher128>>,  String16,   murmur3_128,    Murmur3Hasher128,
-    hashbrown, HashSet<String32,BuildHasherDefault<Murmur3Hasher128>>,  String32,   murmur3_128,    Murmur3Hasher128,
-    hashbrown, HashSet<StringSlow,BuildHasherDefault<Murmur3Hasher128>>,StringSlow, murmur3_128,    Murmur3Hasher128
-);
+create_benchmark! (hashbrown, murmur3_128, Murmur3Hasher128);

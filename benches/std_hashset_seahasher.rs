@@ -17,26 +17,8 @@
 
 mod common;
 
-use core::hash::BuildHasherDefault;
 use std::collections::HashSet;
-
 use seahash::SeaHasher;
-
 use common::ProduceKey;
-use common::String8;
-use common::String16;
-use common::String32;
-use common::StringSlow;
 
-criterion::criterion_main!(std_hashset);
-
-create_benchmark! (std_hashset,
-    std_hashset, HashSet<u32,BuildHasherDefault<SeaHasher>>,        u32,        seahasher,  SeaHasher,
-    std_hashset, HashSet<usize,BuildHasherDefault<SeaHasher>>,      usize,      seahasher,  SeaHasher,
-    std_hashset, HashSet<u128,BuildHasherDefault<SeaHasher>>,       u128,       seahasher,  SeaHasher,
-    std_hashset, HashSet<String,BuildHasherDefault<SeaHasher>>,     String,     seahasher,  SeaHasher,
-    std_hashset, HashSet<String8,BuildHasherDefault<SeaHasher>>,    String8,    seahasher,  SeaHasher,
-    std_hashset, HashSet<String16,BuildHasherDefault<SeaHasher>>,   String16,   seahasher,  SeaHasher,
-    std_hashset, HashSet<String32,BuildHasherDefault<SeaHasher>>,   String32,   seahasher,  SeaHasher,
-    std_hashset, HashSet<StringSlow,BuildHasherDefault<SeaHasher>>, StringSlow, seahasher,  SeaHasher
-);
+create_benchmark! (std_hashset, seahasher, SeaHasher);

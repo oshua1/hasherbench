@@ -34,14 +34,14 @@ use crate::common::HashSetTrait;
 criterion::criterion_main!(hashbrown);
 
 create_benchmark! (hashbrown,
-    hashbrown, HashSet<u32,FixedState>,         u32,        foldhasher, FoldHasher,
-    hashbrown, HashSet<usize,FixedState>,       usize,      foldhasher, FoldHasher,
-    hashbrown, HashSet<u128,FixedState>,        u128,       foldhasher, FoldHasher,
-    hashbrown, HashSet<String,FixedState>,      String,     foldhasher, FoldHasher,
-    hashbrown, HashSet<String8,FixedState>,     String8,    foldhasher, FoldHasher,
-    hashbrown, HashSet<String16,FixedState>,    String16,   foldhasher, FoldHasher,
-    hashbrown, HashSet<String32,FixedState>,    String32,   foldhasher, FoldHasher,
-    hashbrown, HashSet<StringSlow,FixedState>,  StringSlow, foldhasher, FoldHasher
+    hashbrown, HashSet<u32,FixedState>,         u32,        u32,        foldhasher, FoldHasher,
+    hashbrown, HashSet<usize,FixedState>,       usize,      usize,      foldhasher, FoldHasher,
+    hashbrown, HashSet<u128,FixedState>,        u128,       u128,       foldhasher, FoldHasher,
+    hashbrown, HashSet<String,FixedState>,      String,     String,     foldhasher, FoldHasher,
+    hashbrown, HashSet<String8,FixedState>,     String8,    String8,    foldhasher, FoldHasher,
+    hashbrown, HashSet<String16,FixedState>,    String16,   String16,   foldhasher, FoldHasher,
+    hashbrown, HashSet<String32,FixedState>,    String32,   String32,   foldhasher, FoldHasher,
+    hashbrown, HashSet<StringSlow,FixedState>,  StringSlow, StringSlow, foldhasher, FoldHasher
 );
 
 // Special implementation for hashbrown::HashSet and FoldHasher which doesn't implement Default

@@ -17,26 +17,8 @@
 
 mod common;
 
-use core::hash::BuildHasherDefault;
 use std::collections::HashSet;
-
 use highhash::murmur::Murmur3Hasher128;
-
 use common::ProduceKey;
-use common::String8;
-use common::String16;
-use common::String32;
-use common::StringSlow;
 
-criterion::criterion_main!(std_hashset);
-
-create_benchmark! (std_hashset,
-    std_hashset, HashSet<u32,BuildHasherDefault<Murmur3Hasher128>>,         u32,        murmur3_128,  Murmur3Hasher128,
-    std_hashset, HashSet<usize,BuildHasherDefault<Murmur3Hasher128>>,       usize,      murmur3_128,  Murmur3Hasher128,
-    std_hashset, HashSet<u128,BuildHasherDefault<Murmur3Hasher128>>,        u128,       murmur3_128,  Murmur3Hasher128,
-    std_hashset, HashSet<String,BuildHasherDefault<Murmur3Hasher128>>,      String,     murmur3_128,  Murmur3Hasher128,
-    std_hashset, HashSet<String8,BuildHasherDefault<Murmur3Hasher128>>,     String8,    murmur3_128,  Murmur3Hasher128,
-    std_hashset, HashSet<String16,BuildHasherDefault<Murmur3Hasher128>>,    String16,   murmur3_128,  Murmur3Hasher128,
-    std_hashset, HashSet<String32,BuildHasherDefault<Murmur3Hasher128>>,    String32,   murmur3_128,  Murmur3Hasher128,
-    std_hashset, HashSet<StringSlow,BuildHasherDefault<Murmur3Hasher128>>,  StringSlow, murmur3_128,  Murmur3Hasher128
-);
+create_benchmark! (std_hashset, murmur3_128, Murmur3Hasher128);

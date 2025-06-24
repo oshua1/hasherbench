@@ -34,14 +34,14 @@ use crate::common::HashSetTrait;
 criterion::criterion_main!(std_hashset);
 
 create_benchmark! (std_hashset,
-    std_hashset, HashSet<u32,FixedState>,           u32,        foldhasher,     FoldHasher,
-    std_hashset, HashSet<usize,FixedState>,         usize,      foldhasher,     FoldHasher,
-    std_hashset, HashSet<u128,FixedState>,          u128,       foldhasher,     FoldHasher,
-    std_hashset, HashSet<String,FixedState>,        String,     foldhasher,     FoldHasher,
-    std_hashset, HashSet<String8,FixedState>,       String8,    foldhasher,     FoldHasher,
-    std_hashset, HashSet<String16,FixedState>,      String16,   foldhasher,     FoldHasher,
-    std_hashset, HashSet<String32,FixedState>,      String32,   foldhasher,     FoldHasher,
-    std_hashset, HashSet<StringSlow,FixedState>,    StringSlow, foldhasher,     FoldHasher
+    std_hashset, HashSet<u32,FixedState>,           u32,        u32,        foldhasher,     FoldHasher,
+    std_hashset, HashSet<usize,FixedState>,         usize,      usize,      foldhasher,     FoldHasher,
+    std_hashset, HashSet<u128,FixedState>,          u128,       u128,       foldhasher,     FoldHasher,
+    std_hashset, HashSet<String,FixedState>,        String,     string,     foldhasher,     FoldHasher,
+    std_hashset, HashSet<String8,FixedState>,       String8,    string8,    foldhasher,     FoldHasher,
+    std_hashset, HashSet<String16,FixedState>,      String16,   string16,   foldhasher,     FoldHasher,
+    std_hashset, HashSet<String32,FixedState>,      String32,   string32,   foldhasher,     FoldHasher,
+    std_hashset, HashSet<StringSlow,FixedState>,    StringSlow, stringslow, foldhasher,     FoldHasher
 );
 
 // Special implementation for std HashSet and FoldHasher which doesn't implement Default

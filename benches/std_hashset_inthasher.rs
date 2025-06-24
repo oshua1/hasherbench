@@ -27,6 +27,6 @@ use common::ProduceKey;
 criterion::criterion_main!(std_hashset);
 
 create_benchmark! (std_hashset,
-    std_hashset, HashSet<u32,BuildHasherDefault<IntHasher<u32>>>,   u32,    integer_hasher, IntHasher<u32>,
-    std_hashset, HashSet<u64,BuildHasherDefault<IntHasher<u64>>>,   u64,    integer_hasher, IntHasher<u64>
+    std_hashset, HashSet<u32,BuildHasherDefault<IntHasher<u32>>>,   u32,u32,integer_hasher, IntHasher<u32>,
+    std_hashset, HashSet<u64,BuildHasherDefault<IntHasher<u64>>>,   u64,u64,integer_hasher, IntHasher<u64>
 );
