@@ -3,7 +3,7 @@ use core::hash::Hasher;
 use criterion::Criterion;
 
 use crate::common::HashSetTrait;
-use crate::ProduceKey;
+use crate::common::ProduceKey;
 
 pub (crate) fn create_criterion() -> Criterion {
     criterion::Criterion::default()

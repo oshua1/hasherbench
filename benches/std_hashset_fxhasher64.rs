@@ -2,6 +2,5 @@ mod common;
 
 use std::collections::HashSet;
 use ritehash::FxHasher64;
-use common::ProduceKey;
 
 create_benchmark! (std_hashset, fxhasher64, FxHasher64);

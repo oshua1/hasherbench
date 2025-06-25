@@ -6,13 +6,10 @@ use std::collections::HashSet;
 use foldhash::fast::FixedState;
 use foldhash::fast::FoldHasher;
 
-use common::ProduceKey;
 use common::String8;
 use common::String16;
 use common::String32;
 use common::StringSlow;
-
-use crate::common::HashSetTrait;
 
 criterion::criterion_main!(std_hashset);
 
@@ -29,9 +26,9 @@ create_benchmark! (std_hashset,
 
 // Special implementation for std HashSet and FoldHasher which doesn't implement Default
 
-impl<KEY, HASHER> HashSetTrait<KEY, HASHER> for HashSet<KEY, FixedState>
+impl<KEY, HASHER> common::HashSetTrait<KEY, HASHER> for HashSet<KEY, FixedState>
 where
-    KEY: ProduceKey,
+    KEY: common::ProduceKey,
     HASHER: Hasher,
 {
     fn with_capacity(capacity: usize) -> Self {

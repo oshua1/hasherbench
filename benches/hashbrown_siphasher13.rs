@@ -5,6 +5,5 @@ mod common;
 
 use core::hash::SipHasher13;
 use hashbrown::HashSet;
-use common::ProduceKey;
 
 create_benchmark! (hashbrown, sip_hash13, SipHasher13);

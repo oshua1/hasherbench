@@ -3,7 +3,6 @@ mod common;
 use core::hash::BuildHasherDefault;
 use hashbrown::HashSet;
 use integer_hasher::IntHasher;
-use common::ProduceKey;
 
 criterion::criterion_main!(hashbrown);
 

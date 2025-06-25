@@ -10,10 +10,9 @@
 use core::hash::BuildHasherDefault;
 use core::hash::Hasher;
 
-use ahash::AHashSet;
 use foldhash::fast::FixedState;
 
-use crate::ProduceKey;
+use crate::common::ProduceKey;
 
 /// Must be implemented for all `HashSet` / `HashMap` types to be benchmarkable here
 pub trait HashSetTrait<KEY: ProduceKey, HASHER: Hasher> {
