@@ -1,20 +1,3 @@
-#![allow(
-    unused_crate_dependencies,
-    reason = "Every benchmark module tests single collection; others remain unused"
-)]
-#![allow(
-    non_snake_case,
-    reason = "Auto-creating function names with embedded type names like 'String'"
-)]
-#![allow(
-    single_use_lifetimes,
-    reason = "impl HashSetTrait for vector_map_VecSet::get() fails without (otherwise unneeded) lifetime annotation"
-)]
-#![allow(
-    clippy::unreadable_literal,
-    reason = "Numbers are used for function names; need to avoid ambiguities with following percentage parameter"
-)]
-
 mod common;
 
 use core::hash::Hasher;
@@ -37,11 +20,11 @@ create_benchmark! (hashbrown,
     hashbrown, HashSet<u32,FixedState>,         u32,        u32,        foldhasher, FoldHasher,
     hashbrown, HashSet<usize,FixedState>,       usize,      usize,      foldhasher, FoldHasher,
     hashbrown, HashSet<u128,FixedState>,        u128,       u128,       foldhasher, FoldHasher,
-    hashbrown, HashSet<String,FixedState>,      String,     String,     foldhasher, FoldHasher,
-    hashbrown, HashSet<String8,FixedState>,     String8,    String8,    foldhasher, FoldHasher,
-    hashbrown, HashSet<String16,FixedState>,    String16,   String16,   foldhasher, FoldHasher,
-    hashbrown, HashSet<String32,FixedState>,    String32,   String32,   foldhasher, FoldHasher,
-    hashbrown, HashSet<StringSlow,FixedState>,  StringSlow, StringSlow, foldhasher, FoldHasher
+    hashbrown, HashSet<String,FixedState>,      String,     string,     foldhasher, FoldHasher,
+    hashbrown, HashSet<String8,FixedState>,     String8,    string8,    foldhasher, FoldHasher,
+    hashbrown, HashSet<String16,FixedState>,    String16,   string16,   foldhasher, FoldHasher,
+    hashbrown, HashSet<String32,FixedState>,    String32,   string32,   foldhasher, FoldHasher,
+    hashbrown, HashSet<StringSlow,FixedState>,  StringSlow, stringslow, foldhasher, FoldHasher
 );
 
 // Special implementation for hashbrown::HashSet and FoldHasher which doesn't implement Default

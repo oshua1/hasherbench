@@ -31,7 +31,6 @@ rustflags = [
     "-Wnonstandard_style",
     "-Wrust_2018_idioms",
     "-Wrust_2021_prefixes_incompatible_syntax",
-    "-Wsingle_use_lifetimes",
     "-Wtrivial_casts",
     # "-Wunnameable_types",
     "-Aunreachable_pub",

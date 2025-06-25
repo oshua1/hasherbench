@@ -104,6 +104,13 @@ zwohash             = { version = "0.1.2" }
 
 [dev-dependencies]
 
+[lints.rust]
+single_use_lifetimes        = "allow"   # impl HashSetTrait for vector_map_VecSet::get() fails without (otherwise unneeded) lifetime annotation
+unused_crate_dependencies   = "allow"   # Every benchmark module tests single collection only; others remain unused
+
+[lints.clippy]
+unreadable_literal          = "allow"   # Numbers are used for function names; need to avoid ambiguities with following percentage parameter
+
 [profile.dev]
 opt-level           = 1
 lto                 = false
