@@ -16,20 +16,20 @@ macro_rules! create_benchmark {
     // Lowest abstraction: creates benchmark functions of type setup_*
     ($(setup $collname:ident,$colltype:ty,$keytype:ty,$keytypename:ident,$hashername:ident,$hasher:ty,$size:expr,$perc:expr),+) => {
         $(paste::paste! (
-            pub fn [< bench_setup_ $size _ $perc _ $keytypename _ $collname _ $hashername >] (criterion: &mut criterion::Criterion) -> usize {
+            pub fn [< bench_setup_ $size _ $perc p_ $keytypename _ $collname _ $hashername >] (criterion: &mut criterion::Criterion) -> usize {
                 $crate::common::bench_setup::<$colltype, $size, $perc, $keytype, $hasher>(criterion,
                     // This defines name of function and benchmark entry to create
-                    stringify!([< setup_  $size _ $perc _ $keytypename _ $collname _ $hashername >]))
+                    stringify!([< setup_  $size _ $perc p_ $keytypename _ $collname _ $hashername >]))
             }
         );)+
     };
     // Lowest abstraction: creates benchmark functions of type lookup_*
     ($(lookup $collname:ident,$colltype:ty,$keytype:ty,$keytypename:ident,$hashername:ident,$hasher:ty,$size:expr,$perc:expr);+) => {
         $(paste::paste! (
-            pub fn [< bench_lookup_ $size _ $perc _ $keytypename _ $collname _ $hashername >] (criterion: &mut criterion::Criterion) -> usize {
+            pub fn [< bench_lookup_ $size _ $perc p_ $keytypename _ $collname _ $hashername >] (criterion: &mut criterion::Criterion) -> usize {
                 $crate::common::bench_lookup::<$colltype, $size, $perc, $keytype, $hasher>(criterion,
                     // This defines name of function and benchmark entry to create
-                    stringify!([< lookup_ $size _ $perc _ $keytypename _ $collname _ $hashername >]))
+                    stringify!([< lookup_ $size _ $perc p_ $keytypename _ $collname _ $hashername >]))
             }
         );)+
     };
@@ -38,7 +38,7 @@ macro_rules! create_benchmark {
         paste::paste! (
             $(create_benchmark! ($tt $collname, $colltype, $keytype, $keytypename, $hashername, $hasher, $size, $perc);)+
             criterion::criterion_group! (name = $groupname; config = $crate::common::create_criterion();
-                targets=$([< bench_ $tt _ $size _ $perc _ $keytypename _ $collname _ $hashername >]),+););
+                targets=$([< bench_ $tt _ $size _ $perc p_ $keytypename _ $collname _ $hashername >]),+););
     };
     // High abstraction: creates  15 benchmark functions per collection, key and hasher type
     ($groupname:ident, $($collname:ident,$colltype:ty,$keytype:ty,$keytypename:ident,$hashername:ident,$hasher:ty),+) => {
@@ -63,23 +63,23 @@ macro_rules! create_benchmark {
         pub fn $groupname () {
             let mut criterion = $crate::common::create_criterion ();
             paste::paste! ($(
-                [< bench_ setup _ 10 _ 100 _ $keytypename _ $collname _ $hashername >] (&mut criterion);
-                [< bench_ setup _ 100 _ 100 _ $keytypename _ $collname _ $hashername >] (&mut criterion);
-                [< bench_ setup _ 1000 _ 100 _ $keytypename _ $collname _ $hashername >] (&mut criterion);
-                [< bench_ setup _ 10000 _ 100 _ $keytypename _ $collname _ $hashername >] (&mut criterion);
-                [< bench_ setup _ 100000 _ 100 _ $keytypename _ $collname _ $hashername >] (&mut criterion);
+                [< bench_ setup _ 10 _ 100 p_ $keytypename _ $collname _ $hashername >] (&mut criterion);
+                [< bench_ setup _ 100 _ 100 p_ $keytypename _ $collname _ $hashername >] (&mut criterion);
+                [< bench_ setup _ 1000 _ 100 p_ $keytypename _ $collname _ $hashername >] (&mut criterion);
+                [< bench_ setup _ 10000 _ 100 p_ $keytypename _ $collname _ $hashername >] (&mut criterion);
+                [< bench_ setup _ 100000 _ 100 p_ $keytypename _ $collname _ $hashername >] (&mut criterion);
 
-                [< bench_ lookup _ 10 _ 100 _ $keytypename _ $collname _ $hashername >] (&mut criterion);
-                [< bench_ lookup _ 100 _ 100 _ $keytypename _ $collname _ $hashername >] (&mut criterion);
-                [< bench_ lookup _ 1000 _ 100 _ $keytypename _ $collname _ $hashername >] (&mut criterion);
-                [< bench_ lookup _ 10000 _ 100 _ $keytypename _ $collname _ $hashername >] (&mut criterion);
-                [< bench_ lookup _ 100000 _ 100 _ $keytypename _ $collname _ $hashername >] (&mut criterion);
+                [< bench_ lookup _ 10 _ 100 p_ $keytypename _ $collname _ $hashername >] (&mut criterion);
+                [< bench_ lookup _ 100 _ 100 p_ $keytypename _ $collname _ $hashername >] (&mut criterion);
+                [< bench_ lookup _ 1000 _ 100 p_ $keytypename _ $collname _ $hashername >] (&mut criterion);
+                [< bench_ lookup _ 10000 _ 100 p_ $keytypename _ $collname _ $hashername >] (&mut criterion);
+                [< bench_ lookup _ 100000 _ 100 p_ $keytypename _ $collname _ $hashername >] (&mut criterion);
 
-                [< bench_ lookup _ 10 _ 10 _ $keytypename _ $collname _ $hashername >] (&mut criterion);
-                [< bench_ lookup _ 100 _ 10 _ $keytypename _ $collname _ $hashername >] (&mut criterion);
-                [< bench_ lookup _ 1000 _ 10 _ $keytypename _ $collname _ $hashername >] (&mut criterion);
-                [< bench_ lookup _ 10000 _ 10 _ $keytypename _ $collname _ $hashername >] (&mut criterion);
-                [< bench_ lookup _ 100000 _ 10 _ $keytypename _ $collname _ $hashername >] (&mut criterion);
+                [< bench_ lookup _ 10 _ 10 p_ $keytypename _ $collname _ $hashername >] (&mut criterion);
+                [< bench_ lookup _ 100 _ 10 p_ $keytypename _ $collname _ $hashername >] (&mut criterion);
+                [< bench_ lookup _ 1000 _ 10 p_ $keytypename _ $collname _ $hashername >] (&mut criterion);
+                [< bench_ lookup _ 10000 _ 10 p_ $keytypename _ $collname _ $hashername >] (&mut criterion);
+                [< bench_ lookup _ 100000 _ 10 p_ $keytypename _ $collname _ $hashername >] (&mut criterion);
         )+); }
     };
     // Highest abstraction: creates  15*8 benchmark functions per collection and hasher type and instantiates Criterion
