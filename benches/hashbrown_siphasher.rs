@@ -1,3 +1,4 @@
+#![feature(random)]
 #![allow(deprecated, reason = "Just benchmarking")]
 
 mod common;

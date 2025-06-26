@@ -1,3 +1,5 @@
+#![feature(random)]
+
 mod common;
 
 use std::collections::HashSet;

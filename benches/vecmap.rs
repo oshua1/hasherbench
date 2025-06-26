@@ -1,9 +1,12 @@
+#![feature(random)]
+
 mod common;
 
 use std::hash::DefaultHasher;
 use common::HashSetTrait;
 use common::ProduceKey;
 use common::String16;
+use common::String128;
 use common::StringFmtDyn;
 
 criterion::criterion_main!(vecmap);
@@ -50,6 +53,14 @@ create_benchmark! (vecmap,
     lookup vecmap_vecset,   vecmap::VecSet<String16>,       String16,       string16,       default_hasher, DefaultHasher, 100, 100,
     lookup vecmap_vecset,   vecmap::VecSet<String16>,       String16,       string16,       default_hasher, DefaultHasher, 1000, 100,
     lookup vecmap_vecset,   vecmap::VecSet<String16>,       String16,       string16,       default_hasher, DefaultHasher, 10000, 100,
+    setup vecmap_vecset,    vecmap::VecSet<String128>,      String128,      string128,      default_hasher, DefaultHasher, 10, 100,
+    setup vecmap_vecset,    vecmap::VecSet<String128>,      String128,      string128,      default_hasher, DefaultHasher, 100, 100,
+    setup vecmap_vecset,    vecmap::VecSet<String128>,      String128,      string128,      default_hasher, DefaultHasher, 1000, 100,
+    setup vecmap_vecset,    vecmap::VecSet<String128>,      String128,      string128,      default_hasher, DefaultHasher, 10000, 100,
+    lookup vecmap_vecset,   vecmap::VecSet<String128>,      String128,      string128,      default_hasher, DefaultHasher, 10, 100,
+    lookup vecmap_vecset,   vecmap::VecSet<String128>,      String128,      string128,      default_hasher, DefaultHasher, 100, 100,
+    lookup vecmap_vecset,   vecmap::VecSet<String128>,      String128,      string128,      default_hasher, DefaultHasher, 1000, 100,
+    lookup vecmap_vecset,   vecmap::VecSet<String128>,      String128,      string128,      default_hasher, DefaultHasher, 10000, 100,
     setup vecmap_vecset,    vecmap::VecSet<StringFmtDyn>,   StringFmtDyn,   stringfmtdyn,   default_hasher, DefaultHasher, 10, 100,
     setup vecmap_vecset,    vecmap::VecSet<StringFmtDyn>,   StringFmtDyn,   stringfmtdyn,   default_hasher, DefaultHasher, 100, 100,
     setup vecmap_vecset,    vecmap::VecSet<StringFmtDyn>,   StringFmtDyn,   stringfmtdyn,   default_hasher, DefaultHasher, 1000, 100,

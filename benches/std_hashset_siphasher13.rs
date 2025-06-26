@@ -1,4 +1,4 @@
-#![feature (hashmap_internals)]
+#![feature(hashmap_internals, random)]
 #![allow(internal_features, deprecated, reason = "Just benchmarking")]
 
 mod common;

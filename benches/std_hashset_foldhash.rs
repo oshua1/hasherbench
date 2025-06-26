@@ -1,3 +1,5 @@
+#![feature(random)]
+
 mod common;
 
 use core::hash::Hasher;
@@ -6,9 +8,9 @@ use std::collections::HashSet;
 use foldhash::fast::FixedState;
 use foldhash::fast::FoldHasher;
 
-use common::String8;
 use common::String16;
-use common::String32;
+use common::String128;
+use common::String1024;
 use common::StringFmtDyn;
 
 criterion::criterion_main!(std_hashset);
@@ -18,9 +20,9 @@ create_benchmark! (std_hashset,
     std_hashset, HashSet<usize,FixedState>,         usize,          usize,          foldhasher, FoldHasher,
     std_hashset, HashSet<u128,FixedState>,          u128,           u128,           foldhasher, FoldHasher,
     std_hashset, HashSet<String,FixedState>,        String,         string,         foldhasher, FoldHasher,
-    std_hashset, HashSet<String8,FixedState>,       String8,        string8,        foldhasher, FoldHasher,
     std_hashset, HashSet<String16,FixedState>,      String16,       string16,       foldhasher, FoldHasher,
-    std_hashset, HashSet<String32,FixedState>,      String32,       string32,       foldhasher, FoldHasher,
+    std_hashset, HashSet<String128,FixedState>,     String128,      string128,      foldhasher, FoldHasher,
+    std_hashset, HashSet<String1024,FixedState>,    String1024,     string1024,     foldhasher, FoldHasher,
     std_hashset, HashSet<StringFmtDyn,FixedState>,  StringFmtDyn,   stringfmtdyn,   foldhasher, FoldHasher
 );
 

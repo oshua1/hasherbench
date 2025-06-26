@@ -1,8 +1,11 @@
+#![feature(random)]
+
 mod common;
 
 use common::HashSetTrait;
 use common::ProduceKey;
 use common::String16;
+use common::String128;
 use common::StringFmtDyn;
 use std::hash::DefaultHasher;
 
@@ -60,6 +63,16 @@ create_benchmark! (litemap,
     lookup litemap,     litemap::LiteMap<String16,()>,      String16,       string16,       default_hasher, DefaultHasher, 1000, 100,
     lookup litemap,     litemap::LiteMap<String16,()>,      String16,       string16,       default_hasher, DefaultHasher, 10000, 100,
     lookup litemap,     litemap::LiteMap<String16,()>,      String16,       string16,       default_hasher, DefaultHasher, 100000, 100,
+    setup litemap,      litemap::LiteMap<String128,()>,     String128,      string128,      default_hasher, DefaultHasher, 10, 100,
+    setup litemap,      litemap::LiteMap<String128,()>,     String128,      string128,      default_hasher, DefaultHasher, 100, 100,
+    setup litemap,      litemap::LiteMap<String128,()>,     String128,      string128,      default_hasher, DefaultHasher, 1000, 100,
+    setup litemap,      litemap::LiteMap<String128,()>,     String128,      string128,      default_hasher, DefaultHasher, 10000, 100,
+    setup litemap,      litemap::LiteMap<String128,()>,     String128,      string128,      default_hasher, DefaultHasher, 100000, 100,
+    lookup litemap,     litemap::LiteMap<String128,()>,     String128,      string128,      default_hasher, DefaultHasher, 10, 100,
+    lookup litemap,     litemap::LiteMap<String128,()>,     String128,      string128,      default_hasher, DefaultHasher, 100, 100,
+    lookup litemap,     litemap::LiteMap<String128,()>,     String128,      string128,      default_hasher, DefaultHasher, 1000, 100,
+    lookup litemap,     litemap::LiteMap<String128,()>,     String128,      string128,      default_hasher, DefaultHasher, 10000, 100,
+    lookup litemap,     litemap::LiteMap<String128,()>,     String128,      string128,      default_hasher, DefaultHasher, 100000, 100,
     setup litemap,      litemap::LiteMap<StringFmtDyn,()>,  StringFmtDyn,   stringfmtdyn,   default_hasher, DefaultHasher, 10, 100,
     setup litemap,      litemap::LiteMap<StringFmtDyn,()>,  StringFmtDyn,   stringfmtdyn,   default_hasher, DefaultHasher, 100, 100,
     setup litemap,      litemap::LiteMap<StringFmtDyn,()>,  StringFmtDyn,   stringfmtdyn,   default_hasher, DefaultHasher, 1000, 100,
