@@ -9,19 +9,19 @@ use hashbrown::HashSet;
 use common::String8;
 use common::String16;
 use common::String32;
-use common::StringSlow;
+use common::StringFmtDyn;
 
 criterion::criterion_main!(hashbrown);
 
 create_benchmark! (hashbrown,
-    hashbrown, HashSet<u32,FixedState>,         u32,        u32,        foldhasher, FoldHasher,
-    hashbrown, HashSet<usize,FixedState>,       usize,      usize,      foldhasher, FoldHasher,
-    hashbrown, HashSet<u128,FixedState>,        u128,       u128,       foldhasher, FoldHasher,
-    hashbrown, HashSet<String,FixedState>,      String,     string,     foldhasher, FoldHasher,
-    hashbrown, HashSet<String8,FixedState>,     String8,    string8,    foldhasher, FoldHasher,
-    hashbrown, HashSet<String16,FixedState>,    String16,   string16,   foldhasher, FoldHasher,
-    hashbrown, HashSet<String32,FixedState>,    String32,   string32,   foldhasher, FoldHasher,
-    hashbrown, HashSet<StringSlow,FixedState>,  StringSlow, stringslow, foldhasher, FoldHasher
+    hashbrown, HashSet<u32,FixedState>,             u32,            u32,            foldhasher, FoldHasher,
+    hashbrown, HashSet<usize,FixedState>,           usize,          usize,          foldhasher, FoldHasher,
+    hashbrown, HashSet<u128,FixedState>,            u128,           u128,           foldhasher, FoldHasher,
+    hashbrown, HashSet<String,FixedState>,          String,         string,         foldhasher, FoldHasher,
+    hashbrown, HashSet<String8,FixedState>,         String8,        string8,        foldhasher, FoldHasher,
+    hashbrown, HashSet<String16,FixedState>,        String16,       string16,       foldhasher, FoldHasher,
+    hashbrown, HashSet<String32,FixedState>,        String32,       string32,       foldhasher, FoldHasher,
+    hashbrown, HashSet<StringFmtDyn,FixedState>,    StringFmtDyn,   stringfmtdyn,   foldhasher, FoldHasher
 );
 
 // Special implementation for hashbrown::HashSet and FoldHasher which doesn't implement Default

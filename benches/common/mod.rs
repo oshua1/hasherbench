@@ -20,7 +20,7 @@ pub (crate) use keytype::ProduceKey;
 pub (crate) use keytype::String8;
 pub (crate) use keytype::String16;
 pub (crate) use keytype::String32;
-pub (crate) use keytype::StringSlow;
+pub (crate) use keytype::StringFmtDyn;
 
 pub(crate) const WARM_UP_TIME_SECS: f32 = 0.2; // Enough for nearly 99% precision
 pub(crate) const MEASUREMENT_TIME_SECS: f32 = 0.5; // Enough for nearly 99% precision

@@ -30,7 +30,7 @@ pub struct String32(String);
 
 /// A String key type that uses Formatter (slower) to generate key value
 #[derive(Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord, Default)]
-pub struct StringSlow(String);
+pub struct StringFmtDyn(String);
 
 impl_produce_key!(u32, idx, u32::try_from(idx).unwrap_or_default());
 impl_produce_key!(u64, idx, idx as u64);
@@ -40,7 +40,7 @@ impl_produce_key!(String, idx, idx.to_string());
 impl_produce_key!(String8, idx, Self(prepare_string_key::<16>("01234567", idx)));
 impl_produce_key!(String16, idx, Self(prepare_string_key::<24>("0123456789abcdef", idx)));
 impl_produce_key!(String32, idx, Self(prepare_string_key::<24>("0123456789abcdef0123456789abcdef", idx)));
-impl_produce_key!(StringSlow, idx, Self(format!("{idx}")));
+impl_produce_key!(StringFmtDyn, idx, Self(format!("{idx}")));
 
 #[inline]
 fn prepare_string_key<const SIZE: usize>(head: &str, idx: usize) -> String {

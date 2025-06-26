@@ -86,13 +86,13 @@ macro_rules! create_benchmark {
     ($groupname:ident,$hashername:ident,$hasher:ty) => {
         criterion::criterion_main! ($groupname);
         $crate::create_benchmark! ($groupname,
-            $groupname, HashSet<u32,                        core::hash::BuildHasherDefault<$hasher>>,   u32,                        u32,        $hashername,    $hasher,
-            $groupname, HashSet<usize,                      core::hash::BuildHasherDefault<$hasher>>,   usize,                      usize,      $hashername,    $hasher,
-            $groupname, HashSet<u128,                       core::hash::BuildHasherDefault<$hasher>>,   u128,                       u128,       $hashername,    $hasher,
-            $groupname, HashSet<String,                     core::hash::BuildHasherDefault<$hasher>>,   String,                     string,     $hashername,    $hasher,
-            $groupname, HashSet<$crate::common::String8,    core::hash::BuildHasherDefault<$hasher>>,   $crate::common::String8,    string8,    $hashername,    $hasher,
-            $groupname, HashSet<$crate::common::String16,   core::hash::BuildHasherDefault<$hasher>>,   $crate::common::String16,   string16,   $hashername,    $hasher,
-            $groupname, HashSet<$crate::common::String32,   core::hash::BuildHasherDefault<$hasher>>,   $crate::common::String32,   string32,   $hashername,    $hasher,
-            $groupname, HashSet<$crate::common::StringSlow, core::hash::BuildHasherDefault<$hasher>>,   $crate::common::StringSlow, stringslow, $hashername,    $hasher);
+            $groupname, HashSet<u32,                            core::hash::BuildHasherDefault<$hasher>>,   u32,                            u32,            $hashername,    $hasher,
+            $groupname, HashSet<usize,                          core::hash::BuildHasherDefault<$hasher>>,   usize,                          usize,          $hashername,    $hasher,
+            $groupname, HashSet<u128,                           core::hash::BuildHasherDefault<$hasher>>,   u128,                           u128,           $hashername,    $hasher,
+            $groupname, HashSet<String,                         core::hash::BuildHasherDefault<$hasher>>,   String,                         string,         $hashername,    $hasher,
+            $groupname, HashSet<$crate::common::String8,        core::hash::BuildHasherDefault<$hasher>>,   $crate::common::String8,        string8,        $hashername,    $hasher,
+            $groupname, HashSet<$crate::common::String16,       core::hash::BuildHasherDefault<$hasher>>,   $crate::common::String16,       string16,       $hashername,    $hasher,
+            $groupname, HashSet<$crate::common::String32,       core::hash::BuildHasherDefault<$hasher>>,   $crate::common::String32,       string32,       $hashername,    $hasher,
+            $groupname, HashSet<$crate::common::StringFmtDyn,   core::hash::BuildHasherDefault<$hasher>>,   $crate::common::StringFmtDyn,   stringfmtdyn,   $hashername,    $hasher);
     };
 }
