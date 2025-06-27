@@ -1,4 +1,5 @@
 bench = [
+    { harness = false, name = "btreeset" },
     { harness = false, name = "hashbrown_adler32" },
     { harness = false, name = "hashbrown_ahasher" },
     { harness = false, name = "hashbrown_bricolage" },
