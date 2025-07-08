@@ -132,37 +132,37 @@ function main_menu {
                 choice=$(dialog --shadow --no-tags --checklist "Hasher implementation" 41 60 34 \
                     adler32         "Adler 32 (cryptographic; slow! 👎)"        $(get_selection "$HASHER" adler32) \
                     ahasher         "AHasher"                                   $(get_selection "$HASHER" ahasher) \
-                    bricolage       "Bricolage"                                 $(get_selection "$HASHER" bricolage)  \
-                    cityhasher32    "CityHasher32"                              $(get_selection "$HASHER" cityhasher32)  \
-                    cityhasher64    "CityHasher64"                              $(get_selection "$HASHER" cityhasher64)  \
-                    cityhasher128   "CityHasher128"                             $(get_selection "$HASHER" cityhasher128)  \
-                    default_hasher  "Default (dummy for BTreeset, VecMap etc.)" $(get_selection "$HASHER" default_hasher)  \
-                    djb2hasher      "DJB2Hasher"                                $(get_selection "$HASHER" djb2hasher)  \
-                    farmhasher      "FarmHasher"                                $(get_selection "$HASHER" farmhasher)  \
-                    fny1ahasher     "FNY1aHasher"                               $(get_selection "$HASHER" fny1ahasher)  \
-                    foldhash        "FoldHash (fast 👍)"                        $(get_selection "$HASHER" foldhash)  \
-                    fxhasher64      "FxHasher64 (fast 👍)"                      $(get_selection "$HASHER" fxhasher64)  \
-                    hashhasher      "HashHasher (dummy; slow 👎)"               $(get_selection "$HASHER" hashhasher)  \
-                    highway         "Highway"                                   $(get_selection "$HASHER" highway)  \
-                    inthasher       "IntHasher (integer keys only 👎)"          $(get_selection "$HASHER" inthasher)  \
-                    lookup3hasher   "Lookup3Hasher"                             $(get_selection "$HASHER" lookup3hasher)  \
-                    metrohash64     "MetroHash64"                               $(get_selection "$HASHER" metrohash64)  \
-                    metrohash128    "MetroHash128"                              $(get_selection "$HASHER" metrohash128)  \
-                    murmur3_32      "Murmur3-32"                                $(get_selection "$HASHER" murmur3_32)  \
-                    murmur3_128     "Murmur3-128"                               $(get_selection "$HASHER" murmur3_128)  \
-                    murmur3_128x64  "Murmur3-128 for x86-64"                    $(get_selection "$HASHER" murmur3_128x64)  \
-                    oaathasher      "OAATHasher"                                $(get_selection "$HASHER" oaathasher)  \
-                    rapidhasher     "RapidHasher"                               $(get_selection "$HASHER" rapidhasher)  \
-                    sdbmhasher      "SDBMHasher"                                $(get_selection "$HASHER" sdbmhasher)  \
-                    seahasher       "SeaHasher"                                 $(get_selection "$HASHER" seahasher)  \
-                    sip_hash        "SipHasher (Rust default)"                  $(get_selection "$HASHER" sip_hash)  \
-                    sip_hash13      "SipHasher13 (Rust internal; faster)"       $(get_selection "$HASHER" sip_hash13)  \
-                    spookyhasher    "SpookyHasher"                              $(get_selection "$HASHER" spookyhasher)  \
-                    wyhash          "WyHash"                                    $(get_selection "$HASHER" wyhash)  \
-                    xxhash3_64      "XXHash3 64"                                $(get_selection "$HASHER" xxhash3_64)  \
-                    xxhash32        "XXHash32"                                  $(get_selection "$HASHER" xxhash32)  \
-                    xxhash64        "XXHash64"                                  $(get_selection "$HASHER" xxhash64)  \
-                    zwohash         "ZwoHash (fast 👍)"                         $(get_selection "$HASHER" zwohash)  \
+                    bricolage       "Bricolage"                                 $(get_selection "$HASHER" bricolage) \
+                    cityhasher32    "CityHasher32"                              $(get_selection "$HASHER" cityhasher32) \
+                    cityhasher64    "CityHasher64"                              $(get_selection "$HASHER" cityhasher64) \
+                    cityhasher128   "CityHasher128"                             $(get_selection "$HASHER" cityhasher128) \
+                    default_hasher  "Default (dummy for BTreeset, VecMap etc.)" $(get_selection "$HASHER" default_hasher) \
+                    djb2hasher      "DJB2Hasher"                                $(get_selection "$HASHER" djb2hasher) \
+                    farmhasher      "FarmHasher"                                $(get_selection "$HASHER" farmhasher) \
+                    fnv1a64         "FNV1aHasher"                               $(get_selection "$HASHER" fnv1a64) \
+                    foldhash        "FoldHash (fast 👍)"                        $(get_selection "$HASHER" foldhash) \
+                    fxhasher64      "FxHasher64 (fast 👍)"                      $(get_selection "$HASHER" fxhasher64) \
+                    hashhasher      "HashHasher (dummy; slow 👎)"               $(get_selection "$HASHER" hashhasher) \
+                    highway         "Highway"                                   $(get_selection "$HASHER" highway) \
+                    inthasher       "IntHasher (integer keys only 👎)"          $(get_selection "$HASHER" inthasher) \
+                    lookup3hasher   "Lookup3Hasher"                             $(get_selection "$HASHER" lookup3hasher) \
+                    metrohash64     "MetroHash64"                               $(get_selection "$HASHER" metrohash64) \
+                    metrohash128    "MetroHash128"                              $(get_selection "$HASHER" metrohash128) \
+                    murmur3_32      "Murmur3-32"                                $(get_selection "$HASHER" murmur3_32) \
+                    murmur3_128     "Murmur3-128"                               $(get_selection "$HASHER" murmur3_128) \
+                    murmur3_128x64  "Murmur3-128 for x86-64"                    $(get_selection "$HASHER" murmur3_128x64) \
+                    oaathasher      "OAATHasher"                                $(get_selection "$HASHER" oaathasher) \
+                    rapidhasher     "RapidHasher"                               $(get_selection "$HASHER" rapidhasher) \
+                    sdbmhasher      "SDBMHasher"                                $(get_selection "$HASHER" sdbmhasher) \
+                    seahasher       "SeaHasher"                                 $(get_selection "$HASHER" seahasher) \
+                    sip_hash        "SipHasher (Rust default)"                  $(get_selection "$HASHER" sip_hash) \
+                    sip_hash13      "SipHasher13 (Rust internal; faster)"       $(get_selection "$HASHER" sip_hash13) \
+                    spookyhasher    "SpookyHasher"                              $(get_selection "$HASHER" spookyhasher) \
+                    wyhash          "WyHash"                                    $(get_selection "$HASHER" wyhash) \
+                    xxhash3_64      "XXHash3 64"                                $(get_selection "$HASHER" xxhash3_64) \
+                    xxhash32        "XXHash32"                                  $(get_selection "$HASHER" xxhash32) \
+                    xxhash64        "XXHash64"                                  $(get_selection "$HASHER" xxhash64) \
+                    zwohasher       "ZwoHash (fast 👍)"                         $(get_selection "$HASHER" zwohasher) \
                     2>&1 >/dev/tty)
                 [ $? -eq 0 ] && HASHER="$choice ";;
             exec)
