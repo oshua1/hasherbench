@@ -82,6 +82,9 @@ rust-version        = "1.88"
 [dependencies]
 adler2              = { version = "=2.0.1" }
 ahash               = { version = "=0.8.12" }
+chrono              = { version = "0.4.41", default-features = false, features = ["now", "alloc", "clock"]}
+clap                = { version = "4.5", features = [ "derive", "env" ] }
+console             = { version = "0.16.0", default-features = false, features = ["std"] }
 criterion           = { version = "=3.0.1", package = "criterion2", default-features = false }
 farmhash            = { version = "=1.1.5" }
 foldhash            = { version = "0.1.5" }
@@ -94,9 +97,13 @@ integer-hasher      = { version = "0.1.1" }
 litemap             = { version = "0.8.0" }
 metrohash           = { version = "=1.0.7" }
 paste               = { version = "=1.0.15" }
+parking_lot         = { version = "0.12.4" }
 rapidhash           = { version = "=1.4.0" }
+# rayon               = { version = "=1.10" }
 ritehash            = { version = "0.2.0" }
 seahash             = { version = "=4.1.0" }
+stack_dst           = { version = "=0.7.2" }
+sysinfo             = { version = "0.36" }
 twox-hash           = { version = "=2.1.1", features = ["xxhash32", "xxhash64", "xxhash3_64", "std"] }  # xxhash3_128 unfortunately doesn't implement std::Hasher 😒
 vecmap-rs           = { version = "0.2.3" }
 vector-map          = { version = "=1.0.2" }
@@ -104,6 +111,11 @@ wyhash              = { version = "0.6.0" }
 zwohash             = { version = "0.1.2" }
 
 [dev-dependencies]
+
+[[bin]]
+name                = "hasherbench"
+test                = false
+bench               = false
 
 [lints.rust]
 single_use_lifetimes        = "allow"   # impl HashSetTrait for vector_map_VecSet::get() fails without (otherwise unneeded) lifetime annotation
