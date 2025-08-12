@@ -2526,12 +2526,27 @@ impl Main {
         })
     }
 
-    /// Check whether result target file exists and neither `--overwrite` nor `-y` have been specified.
+    /// Check whether result target files exist and neither `--overwrite` nor `-y` have been specified.
     fn check_target_files_exist_without_overwrite(&self) -> MyResult<()> {
-        if let Some(filespec) = self.args.output.output_file.as_ref() &&
+        let has_multiple_formats = self.args.output.format.len() > 1;
+        if self.args.output.output_file.is_some() && !self.args.output.overwrite && !self.args.general.yes {
+            self.args
+                .output
+                .format
+                .iter()
+                .try_for_each(|output_format| self.check_target_file_exists_without_overwrite(*output_format, has_multiple_formats))
+        } else {
+            Ok(())
+        }
+    }
+
+    /// Check whether result target file exists and neither `--overwrite` nor `-y` have been specified.
+    fn check_target_file_exists_without_overwrite(&self, output_format: OutputFormat, has_multiple_formats: bool) -> MyResult<()> {
+        if let Some(filename) = self.args.output.output_file.as_ref() &&
             !self.args.output.overwrite &&
             !self.args.general.yes
         {
+            let filespec = &Self::create_result_filespec(filename, output_format, has_multiple_formats);
             (!std::fs::exists(filespec)?).then_some(()).ok_or_else(|| {
                 Error::new(
                     ErrorKind::Args,
@@ -2564,9 +2579,9 @@ impl Main {
     /// - if target file exists, it won't be overwritten unless either `--overwrite` or `-y` is specified.
     #[allow(trivial_casts, reason = "Needed by Value allocation")]
     fn create_target_writer(&self, output_format: OutputFormat) -> MyResult<Writer> {
-        self.check_target_files_exist_without_overwrite()?;
-        let optional_filespec = &self.args.output.output_file;
         let has_multiple_formats = self.args.output.format.len() > 1;
+        self.check_target_file_exists_without_overwrite(output_format, has_multiple_formats)?;
+        let optional_filespec = &self.args.output.output_file;
         let overwrite = self.args.output.overwrite || self.args.general.yes;
         let filespec = optional_filespec
             .as_ref()
