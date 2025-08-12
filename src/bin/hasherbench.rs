@@ -212,7 +212,7 @@ use zwohash::ZwoHasher;
 type MyResult<T> = core::result::Result<T, Error>;
 
 /// Trait object of type [`CollectionTrait`] that is stored on stack
-type Collection = ValueA<dyn CollectionTrait, [usize; 6]>;
+type Collection = ValueA<dyn CollectionTrait, [usize; 8]>;
 
 /// Trait object of type [`TimerTrait`] that is stored on stack
 type Timer = ValueA<dyn TimerTrait, [usize; 4]>;
@@ -2331,7 +2331,7 @@ impl Main {
         where
             COLL: CollectionBuilderTrait<BH>+Debug+'static,
             BH: BuildHasher+Clone+Debug, {
-            alloc_stack!(dyn CollectionTrait, [usize; 6], COLL::with_capacity_and_hasher(permutation.size as usize, build_hasher))
+            alloc_stack!(dyn CollectionTrait, [usize; 8], COLL::with_capacity_and_hasher(permutation.size as usize, build_hasher))
         }
 
         resolve_hasher(permutation)
