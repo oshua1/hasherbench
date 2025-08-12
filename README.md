@@ -4,18 +4,24 @@ A Rust command line tool to benchmark and compare speed of many hashing algorith
 
 Only Rust-native hashers are used, no wrappers for C/C++ implementations. Focuses on high-performance, not cryptographically secure hashing. Offers various permutation and output parameters.
 
+This crate needs **Rust Nightly** compiler to build. The following unstable features are used:
+- `hashmap_internals` - for access to experimental `SipHasher13`
+- `random` - for access to [`core::random::Random`] and [`std::random::DefaultRandomSource`]
+
 ## Approaches
 
 This crate consists, historically grown, of two totally different implementation approaches:
 
-1. a `cargo bench` based collection of hardcoded benchmark permutation functions (**unsupported**)
+1. a `cargo bench` based collection of hardcoded benchmark permutation functions (**obsolete** + **unsupported**)
 2. a command line based tool with many operation parameters
 
 # Command line tool approach (dynamic + efficient)
 
 - ordinary command line tool written in Rust.
+- produces benchmark result data in CSV, JSON or plain text format; compact or human-readable-formatted
 - 9 parameters for permutations definition (collection, hasher, offset, key type, string key length, operation, hit rate percent, set size, key step), all dynamically specifyable and optimized tio avoid redundancy.
 - supports single- and multi-threaded execution
+- does not require installed Rust compiler to operate
 
 ## Features
 
@@ -152,6 +158,7 @@ trivial requirement.
 - two shell-scripts (`refine_results.sh` and `evaluate.sh`) are provided to deal with results.
 - code exclusively in **`benches/`** subdirectory. Many, mostly very small Rust source code files.
 - makes massive use of Rust macro expansion and generics. Hence, quite little source code results in enormous compilation times.
+- requires Rust Nightly compiler to be installed and used, and some external shell commands for evaluation scripts.
 - this approach is **unsupported**! Left only for demonstration purposes **how not to do this**! I.e. when `cargo bench` is not right solution.
 
 The amount of result data created by `Criterion` is hardly of any use for direct evaluation and not easy to retrieve manually. Hence, two **shell scripts** are provided to help make some use of results:

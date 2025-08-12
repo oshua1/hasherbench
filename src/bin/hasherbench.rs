@@ -3,6 +3,10 @@
 //! Useful to compare and find best solution for particular use cases. Configured by several command line arguments,
 //! defined by [`Args`].
 //!
+//! This crate needs **Rust Nightly** compiler to build. The following unstable features are used:
+//! - `hashmap_internals` - for access to experimental `SipHasher13`
+//! - `random` - for access to [`core::random::Random`] and [`std::random::DefaultRandomSource`]
+//!
 //! # Features
 //!
 //! - Multiple hashing algorithms, Rust-native implementations only. Currently included:
