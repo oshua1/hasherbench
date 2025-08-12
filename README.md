@@ -108,7 +108,7 @@ General operation parameters:
   -t, --tolerance <TOLERANCE>  Maximum timing tolerance in percent; iteration durations with greater distance to average will be dropped [default: 15]
   -T, --timer <TIMER>          Facility to use for measuring timing [default: instant] [possible values: instant, systime]
   -W, --warmup <WARMUP_MS>     Warmup duration in milliseconds for each benchmark (0 = disable) [default: 100]
-  -Y, --yes                    Assume "yes" on all questions
+  -y, --yes                    Assume "yes" on all questions
 
 Output options:
       --output-mode <OUTPUT_MODE>  Output mode for result data: compact or human-readably formatted (see `--human-readable` for progress output) [default: formatted] [possible values: compact, formatted]
