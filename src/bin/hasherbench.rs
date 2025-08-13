@@ -662,18 +662,16 @@ impl OutputFormat {
                 Ok(())
             },
             | Self::Json => {
-                let mut operations_description = String::with_capacity(1 << 10);
-                OperationsDescription::iter_key_value_pairs().try_for_each(|(key, value_fn)| {
-                    let value = value_fn(descr);
-                    if !value.is_empty() {
-                        Self::write_json_key_value(&mut operations_description, key, &value, 2, -30, ofm)?;
-                    }
-                    Ok::<_, Error>(())
-                })?;
-                match ofm {
-                    | OutputFormatMode::Compact => write!(writer, "{{summary:{{{operations_description}}},results:["),
-                    | OutputFormatMode::Formatted => write!(writer, "{{\n  Summary: {{\n{operations_description}  }},\n  results: [\n"),
-                }?;
+                let (prologue, epilogue) = match ofm {
+                    | OutputFormatMode::Compact => ("{\"summary\":{", "},\"results\":["),
+                    | OutputFormatMode::Formatted => ("{\n  \"summary\": {\n", "\n  },\n  \"results\": [\n"),
+                };
+                writer.write_all(prologue.as_bytes())?;
+                OperationsDescription::iter_key_value_pairs()
+                    .filter(|(_key, value_fn)| !value_fn(descr).is_empty())
+                    .enumerate()
+                    .try_for_each(|(idx, (key, value_fn))| Self::write_json_key_val(writer, key, &value_fn(descr), 2, -26, ofm, idx == 0))?;
+                writer.write_all(epilogue.as_bytes())?;
                 Ok(())
             },
         }?;
@@ -686,13 +684,13 @@ impl OutputFormat {
         match (self, ofm) {
             | (Self::Txt | Self::Csv, _)                => Ok(0),
             | (Self::Json, OutputFormatMode::Compact)   => writer.write(b"]}\n"),
-            | (Self::Json, OutputFormatMode::Formatted) => writer.write(b"  ]\n}\n"),
+            | (Self::Json, OutputFormatMode::Formatted) => writer.write(b"\n  ]\n}\n"),
         }?;
         Ok(())
     }
 
     /// Write data of one [`BenchmarkResult`] in this output format into given target [`Writer`][std::io::Write].
-    fn write_benchmark_result(self, writer: &mut dyn Write, benchmark_result: &BenchmarkResult, ofm: OutputFormatMode) -> MyResult<()> {
+    fn write_benchmark_result(self, writer: &mut dyn Write, benchmark_result: &BenchmarkResult, ofm: OutputFormatMode, is_first: bool) -> std::io::Result<()> {
         match self {
             | Self::Txt => match ofm {
                 | OutputFormatMode::Compact => write!(writer, "{benchmark_result:?}"),
@@ -706,37 +704,15 @@ impl OutputFormat {
                 })
                 .and_then(|()| writeln!(writer)),
             | Self::Json => {
-                // Yes, it's a struct private to this match arm 😲
-                // Needed because of erroneous coercion from fn pointer to closure in 'match ofm' if assigning directly to variables.
-                // TODO: remove this struct again. Replace "body" handler with write_json_key_value().
-                struct OutputFns {
-                    prologue: fn(&mut dyn Write) -> std::io::Result<usize>,
-                    body:     fn(&mut dyn Write, &str, &str, &str) -> std::io::Result<()>,
-                    epilogue: fn(&mut dyn Write) -> std::io::Result<usize>,
-                }
-                let output = match ofm {
-                    | OutputFormatMode::Compact => OutputFns {
-                        prologue: |writer| writer.write(b"{"),
-                        body:     |writer, field, value, quote| write!(writer, "{field}:{quote}{value}{quote},"),
-                        epilogue: |writer: &mut dyn Write| writer.write(b"},"),
-                    },
-                    | OutputFormatMode::Formatted => OutputFns {
-                        prologue: |writer| writer.write(b"    {\n"),
-                        body:     |writer, field, value, quote| writeln!(writer, "      {field:-20}: {quote}{value}{quote},"),
-                        epilogue: |writer: &mut dyn Write| writer.write(b"    },\n"),
-                    },
-                };
-                (output.prologue)(writer)?;
-                BenchmarkResult::iter_fields().try_for_each(|field| -> Result<(), std::io::Error> {
+                writer.write_all(if is_first { b"" } else { b",\n" })?;
+                writer.write_all(if ofm == OutputFormatMode::Formatted { b"    {\n" } else { b"{" })?;
+                BenchmarkResult::iter_fields().enumerate().try_for_each(|(idx, field)| {
                     let value = (field.value_fn)(benchmark_result);
-                    let quote = value.parse().map_or("\"", |_: f32| "");
-                    (output.body)(writer, field.name, &value, quote)
+                    Self::write_json_key_val(writer, field.name, &value, 3, -20, ofm, idx == 0)
                 })?;
-                (output.epilogue)(writer)?;
-                Ok(())
+                writer.write_all(if ofm == OutputFormatMode::Formatted { b"\n    }" } else { b"}" })
             },
-        }?;
-        Ok(())
+        }
     }
 
     /// Get default filename suffix of format.
@@ -783,16 +759,19 @@ impl OutputFormat {
     }
 
     /// Emit key-value pair in given output format, with or without formatting
-    fn write_json_key_value(writer: &mut dyn core::fmt::Write, key: &str, value: &str, level: u8, key_min_width: i8, ofm: OutputFormatMode) -> MyResult<()> {
-        let value = if Self::is_numeric(value) || Self::is_array(value) { value.to_owned() } else { format!("\"{value}\"") };
-        if ofm == OutputFormatMode::Compact {
-            write!(writer, "\"{key}\":{value},")
-        } else {
-            let key = Self::pad(&format!("\"{key}\""), key_min_width + 2);
-            let padding = " ".repeat((level as usize) << 1);
-            writeln!(writer, "{padding}{key}: {value},")
-        }?;
-        Ok(())
+    #[allow(clippy::cast_sign_loss, clippy::cast_abs_to_unsigned, reason = "Interested in absolute value only")]
+    fn write_json_key_val(writer: &mut dyn Write, key: &str, val: &str, level: u8, min_width: i8, ofm: OutputFormatMode, first: bool) -> std::io::Result<()> {
+        let value = if Self::is_numeric(val) || Self::is_array(val) { val.to_owned() } else { format!("\"{val}\"") };
+        let comma = match (ofm, first) {
+            | (OutputFormatMode::Compact, false) => ",",
+            | (OutputFormatMode::Formatted, false) => ",\n",
+            | (_, true) => "",
+        };
+        let (line_padding, key_padding) = match ofm {
+            | OutputFormatMode::Compact => (String::new(), String::new()),
+            | OutputFormatMode::Formatted => (" ".repeat((level as usize) << 1), " ".repeat((min_width.abs() as usize).saturating_sub(key.len()))),
+        };
+        write!(writer, "{comma}{line_padding}\"{key}\":{key_padding}{value}")
     }
 
     /// Simple check whether a string comprises a parseable integer or floating point value
@@ -1256,7 +1235,7 @@ impl BenchmarkResult {
             OFD::new ("offset",             BRFS::PermutationSpec,   6, |bmr| bmr.permutation.offset.to_string()),
             OFD::new ("step",               BRFS::PermutationSpec,   6, |bmr| bmr.permutation.step.to_string()),
             OFD::new ("collection",         BRFS::PermutationSpec,  -20,|bmr| bmr.permutation.collection.to_string()),
-            OFD::new ("hasher",             BRFS::PermutationSpec,  -20,|bmr| bmr.permutation.hasher.to_string()),
+            OFD::new ("hasher",             BRFS::PermutationSpec,  -24,|bmr| bmr.permutation.hasher.to_string()),
             OFD::new ("key_type",           BRFS::PermutationSpec,  -8, |bmr| bmr.permutation.key_type.to_string()),
             OFD::new ("operation",          BRFS::PermutationSpec,  -6, |bmr| bmr.permutation.op.to_string()),
             OFD::new ("string_key_length",  BRFS::PermutationSpec,   5, |bmr| bmr.permutation.string_length.to_string()),
@@ -2478,9 +2457,9 @@ impl Main {
         output_args.format.iter().try_for_each(|output_format| {
             let mut writer = self.create_target_writer(*output_format)?;
             output_format.write_header(&mut *writer, &OperationsDescription::create(self), output_args.csv_header, output_args.output_mode)?;
-            benchmark_results
-                .iter()
-                .try_for_each(|benchmark_result| output_format.write_benchmark_result(&mut *writer, benchmark_result, output_args.output_mode))?;
+            benchmark_results.iter().enumerate().try_for_each(|(idx, benchmark_result)| {
+                output_format.write_benchmark_result(&mut *writer, benchmark_result, output_args.output_mode, idx == 0)
+            })?;
             output_format.write_footer(&mut *writer, output_args.output_mode)
         })
     }
