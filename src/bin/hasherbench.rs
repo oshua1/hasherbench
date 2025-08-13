@@ -131,7 +131,6 @@
 
 // IDEA: GnuPlot diagram creation feature? Yet, best type of graphs and parameter sets unclear.
 // IDEA: make fields to include in output selectable by command line argument
-// TODO: get shot of console dependency again. Not really used much and dispensable.
 
 #![feature(hashmap_internals, random)]
 #![allow(internal_features, deprecated, reason = "Needed or parts of this application")]
@@ -2131,18 +2130,10 @@ impl Main {
             self.args.general.threads as usize > self.sysinfo.cpus().len()) &&
             !self.args.general.yes
         {
-            let err = Err(Error::new(ErrorKind::Args, "Too many permutations or threads selected. Use -y to execute anyway."));
-            let term = console::Term::stdout();
-            if self.args.output.verbosity < Verbosity::Warn || !term.is_term() {
-                return err;
-            }
-            self.printmsg(
-                Verbosity::Warn,
-                "Very many or long permutations or more threads than available CPUs selected or long runtime expected. Really execute? (y/n)",
-            );
-            if term.read_char()? != 'y' {
-                return err;
-            }
+            Err(Error::new(
+                ErrorKind::Args,
+                "Very many or long permutations or more threads than available CPUs selected or long runtime expected. Use -y to execute anyway.",
+            ))?;
         }
         Ok(())
     }
