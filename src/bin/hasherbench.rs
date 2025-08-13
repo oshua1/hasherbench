@@ -285,6 +285,44 @@ enum HashOp {
     | Self::Lookup  => "lookup",
 });
 
+impl HashOp {
+    fn prepare(self, permutation: &PermutationSpec, collection: &mut Collection, string_keys: &[String]) {
+        match self {
+            | Self::Setup => (),
+            | Self::Lookup => Self::setup_collection(permutation, collection, string_keys),
+        }
+    }
+
+    fn execute(self, permutation: &PermutationSpec, collection: &mut Collection, string_keys: &[String]) {
+        match self {
+            | Self::Setup => Self::setup_collection(permutation, collection, string_keys),
+            | Self::Lookup => {
+                let is_int_key = permutation.key_type.is_int_key();
+                let step = if is_int_key { permutation.step as usize } else { 1 };
+                let key_begin = if is_int_key { permutation.offset as usize } else { 0 };
+                let key_end = key_begin + permutation.size as usize * step;
+                (key_begin..key_end).step_by(step).for_each(|idx| {
+                    collection.get(&permutation.key_type.produce_key(string_keys, idx));
+                });
+            },
+        }
+    }
+
+    fn setup_collection(permutation: &PermutationSpec, collection: &mut Collection, string_keys: &[String]) {
+        collection.clear();
+        let is_int_key = permutation.key_type.is_int_key();
+        let add = if is_int_key { permutation.step as usize } else { 1 };
+        let key_begin = if is_int_key { permutation.offset as usize } else { 0 };
+        let key_end = key_begin + permutation.size as usize * add;
+        let modulus = add * 100;
+        let threshold = add * usize::from(permutation.hit_rate_perc);
+        (key_begin..key_end)
+            .step_by(add)
+            .filter(|idx| idx % modulus < threshold)
+            .for_each(|idx| collection.insert(permutation.key_type.produce_key(string_keys, idx)));
+    }
+}
+
 
 /// Type of *Set collection to use for benchmarking.
 ///
@@ -1906,73 +1944,6 @@ impl OperationsDescription {
 }
 
 
-/// Benchmark operation, e.g. setting up or looking up keys in collection
-// QUESTION: perhaps better replace by enum, since we hardly won't support any more ops than lookup and setup?
-trait BenchmarkOp {
-    /// Preparations to be executed once per permutation; duration not measured.
-    fn prepare(&self, permutation: &PermutationSpec, collection: &mut Collection, string_keys: &[String]) -> MyResult<()>;
-    /// Actual operation to benchmark; duration measured and recorded.
-    ///
-    /// Benchmark loop aborts if an error is returned.
-    fn execute(&self, permutation: &PermutationSpec, collection: &mut Collection, string_keys: &[String]) -> MyResult<()>;
-}
-
-/// Benchmark operation: setting up keys in `HashSet`.
-///
-/// Used by [`Main::benchmark_for_duration()`].
-#[derive(Debug, Clone, PartialEq, Eq)]
-struct BenchmarkOpSetup;
-/// Benchmark operation: looking up keys in `HashSet`.
-///
-/// Used by [`Main::benchmark_for_duration()`].
-#[derive(Debug, Clone, PartialEq, Eq)]
-struct BenchmarkOpLookup;
-
-impl BenchmarkOp for BenchmarkOpSetup {
-    fn prepare(&self, _permutation: &PermutationSpec, _collection: &mut Collection, _string_keys: &[String]) -> MyResult<()> { Ok(()) }
-
-    fn execute(&self, permutation: &PermutationSpec, collection: &mut Collection, string_keys: &[String]) -> MyResult<()> {
-        Ok(Self::setup_collection(permutation, collection, string_keys))
-    }
-}
-
-impl BenchmarkOpSetup {
-    /// Actual setup code for collection. This function is also used by [`BenchmarkOpLookup::prepare()`] to prepare
-    /// collection.
-    fn setup_collection(permutation: &PermutationSpec, collection: &mut Collection, string_keys: &[String]) {
-        collection.clear();
-        let is_int_key = permutation.key_type.is_int_key();
-        let add = if is_int_key { permutation.step as usize } else { 1 };
-        let key_begin = if is_int_key { permutation.offset as usize } else { 0 };
-        let key_end = key_begin + permutation.size as usize * add;
-        let modulus = add * 100;
-        let threshold = add * usize::from(permutation.hit_rate_perc);
-        (key_begin..key_end)
-            .step_by(add)
-            .filter(|idx| idx % modulus < threshold)
-            .for_each(|idx| collection.insert(permutation.key_type.produce_key(string_keys, idx)));
-    }
-}
-
-impl BenchmarkOp for BenchmarkOpLookup {
-    /// Uses [`BenchmarkOpSetup::setup_collection()`]
-    fn prepare(&self, permutation: &PermutationSpec, collection: &mut Collection, string_keys: &[String]) -> MyResult<()> {
-        Ok(BenchmarkOpSetup::setup_collection(permutation, collection, string_keys))
-    }
-
-    fn execute(&self, permutation: &PermutationSpec, collection: &mut Collection, string_keys: &[String]) -> MyResult<()> {
-        let is_int_key = permutation.key_type.is_int_key();
-        let step = if is_int_key { permutation.step as usize } else { 1 };
-        let key_begin = if is_int_key { permutation.offset as usize } else { 0 };
-        let key_end = key_begin + permutation.size as usize * step;
-        (key_begin..key_end).step_by(step).for_each(|idx| {
-            collection.get(&permutation.key_type.produce_key(string_keys, idx));
-        });
-        Ok(())
-    }
-}
-
-
 
 /// "Global" state and information of application. Also contains bulk of code.
 ///
@@ -2381,6 +2352,7 @@ impl Main {
     ///
     /// This method may be executed either single- or multi-threaded.
     #[allow(clippy::cast_precision_loss, reason = "Just values between 0..=100 needed")]
+    #[allow(clippy::unnecessary_wraps, reason = "Prefer to keep fallibility and its downstream handling; may be needed in some future context")]
     fn benchmark_for_duration(
         &self,
         permutation: &PermutationSpec,
@@ -2395,16 +2367,12 @@ impl Main {
         let curr_index = permutation.index;
         let max_index = self.num_permutations;
         let percent_done = curr_index as f32 * 100.0 / max_index as f32;
-        let benchmark_op: &dyn BenchmarkOp = match permutation.op {
-            | HashOp::Setup => &BenchmarkOpSetup,
-            | HashOp::Lookup => &BenchmarkOpLookup,
-        };
-        benchmark_op.prepare(permutation, collection, string_keys)?;
+        permutation.op.prepare(permutation, collection, string_keys);
         timer.restart();
         while timer.get_elapsed_ns() < max_nanos {
             collection.clear();
             let timer_iteration = timer.clone_dyn();
-            benchmark_op.execute(permutation, collection, string_keys)?;
+            permutation.op.execute(permutation, collection, string_keys);
             durations_ns.push(timer_iteration.get_elapsed_ns());
         }
         match warmup_mode {
