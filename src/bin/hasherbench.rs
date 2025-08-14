@@ -217,9 +217,6 @@ type MyResult<T> = core::result::Result<T, Error>;
 /// Trait object of type [`CollectionTrait`] that is stored on stack
 type Collection = ValueA<dyn CollectionTrait, [usize; 8]>;
 
-/// Trait object of type [`TimerTrait`] that is stored on stack
-type Timer = ValueA<dyn TimerTrait, [usize; 4]>;
-
 /// Trait object of type [`Write`] that is stored on stack
 type Writer = ValueA<dyn Write, [usize; 4]>;
 
@@ -1730,79 +1727,52 @@ impl_hashset_traits! (this, key, capacity, build_hasher,
         clear   = { });
 
 
-/// To be implemented for all types that would be used as timing sources.
+/// Timer powered by either [`Instant`] or [`SystemTime`] to measure durations
 ///
-/// This trait is used as trait object, not as type parameter. This may reduce accuracy of measurements by a few
-/// nanoseconds due to additional non-inlineable method call. Yet:
-/// - majority of benchmark cases is expected to last thousands or millions of nanoseconds
-/// - using this as trait object reduced compile time by almost **40%(!)** when compared to as type parameter.
-///
-/// Information which timer type was selected gets lost when descending. To create another timer of same type, method
-/// [`clone_dyn()`][Self::clone_dyn()] must be used.
-// TODO: get shot of trait Timer; replace by simple enum methods
-trait TimerTrait {
-    /// Instantiate and start new timer
-    fn new() -> Self
-    where Self: Sized;
-    /// Restart (reuse) timer
-    fn restart(&mut self);
-    /// Duration in nanoseconds since this timer object was instantiated.
-    fn get_elapsed_ns(&self) -> u64;
-    /// Clone `TimerSource` trait object.
+/// Which timer type gets used is specified by `--timer` argument and corresponding [`TimerSourceEnum`] value.
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
+enum Timer {
+    /// Use stdlib [`Instant`] as timing source.
     ///
-    /// This trait is used as trait object. Hence information which timer type was selected gets lost when descending.
-    /// So to create another timer of same type, this method must be used.
-    fn clone_dyn(&self) -> Box<dyn TimerTrait>;
+    /// - guaranteed not to fail, i.e. always counts forwards, barring platform bugs
+    /// - not guaranteed to be steady, i.e. some seconds may be longer than others
+    /// - potentially higher nanoseconds precision
+    Instant(Instant),
+    /// Use stdlib [`SystemTime`] as timing source.
+    ///
+    /// - not guaranteed not to fail, i.e. 2nd query may yield time before 1st one
+    /// - guaranteed to be steady, i.e. all seconds are equally long
+    /// - potentially lower nanoseconds precision
+    SystemTime(SystemTime),
 }
 
-
-/// Use stdlib [`Instant`] as timing source.
-///
-/// - guaranteed not to fail, i.e. always counts forwards, barring platform bugs
-/// - not guaranteed to be steady, i.e. some seconds may be longer than others
-/// - potentially higher nanoseconds precision
-///
-/// See full description of properties at <https://doc.rust-lang.org/std/time/struct.Instant.html>
-#[derive(Debug)]
-struct TimerSourceInstant(Instant);
-
-impl TimerTrait for TimerSourceInstant {
-    fn new() -> Self
-    where Self: Sized {
-        Self(Instant::now())
+impl Timer {
+    /// Instantiate a new [`Timer`] instance by given [`TimerSourceEnum`] type
+    fn new(timer_type: TimerSourceEnum) -> Self {
+        match timer_type {
+            | TimerSourceEnum::Instant => Self::Instant(Instant::now()),
+            | TimerSourceEnum::SysTime => Self::SystemTime(SystemTime::now()),
+        }
     }
 
-    fn restart(&mut self) { self.0 = Instant::now() }
-
-    fn get_elapsed_ns(&self) -> u64 { u64::try_from(self.0.elapsed().as_nanos()).unwrap_or(u64::from(u32::MAX)) }
-
-    fn clone_dyn(&self) -> Box<dyn TimerTrait> { Box::new(Self::new()) }
-}
-
-/// Use stdlib [`SystemTime`] as timing source.
-///
-/// - not guaranteed not to fail, i.e. 2nd query may yield time before 1st one
-/// - guaranteed to be steady, i.e. all seconds are equally long
-/// - potentially lower nanoseconds precision
-///
-/// See full description of properties at <https://doc.rust-lang.org/std/time/struct.SystemTime.html>
-///
-/// In case of timer failure, [`get_elapsed_ns()`][Self::get_elapsed_ns()] returns `u32::MAX`.
-#[derive(Debug)]
-struct TimerSourceSystemTime(SystemTime);
-
-impl TimerTrait for TimerSourceSystemTime {
-    fn new() -> Self
-    where Self: Sized {
-        Self(SystemTime::now())
+    /// Restart timer
+    fn restart(&mut self) {
+        match self {
+            | &mut Self::Instant(ref mut i) => *i = Instant::now(),
+            | &mut Self::SystemTime(ref mut s) => *s = SystemTime::now(),
+        }
     }
 
-    fn restart(&mut self) { self.0 = SystemTime::now() }
-
-    fn get_elapsed_ns(&self) -> u64 { u64::try_from(self.0.elapsed().unwrap_or(Duration::from_micros(1)).as_nanos()).unwrap_or(u64::from(u32::MAX)) }
-
-    fn clone_dyn(&self) -> Box<dyn TimerTrait> { Box::new(Self::new()) }
+    /// Get elapsed duration since creation or last [`Self::restart()`] call in nanoseconds
+    fn get_elapsed_ns(&self) -> u64 {
+        match self {
+            | Self::Instant(i) => u64::try_from(i.elapsed().as_nanos()).unwrap_or(u64::from(u32::MAX)),
+            | Self::SystemTime(s) => u64::try_from(s.elapsed().unwrap_or(Duration::from_micros(1)).as_nanos()).unwrap_or(u64::from(u32::MAX)),
+        }
+    }
 }
+
+
 
 /// Whether a benchmark executor is running in warmup or measure mode
 #[derive(Debug, Clone, PartialEq, PartialOrd, Copy)]
@@ -1929,12 +1899,6 @@ impl OperationsDescription {
 /// Actually a local variable of [`main()`] and passed down to all code that needs this information. It makes sense to
 /// make most program functions methods of this type. Because many methods need [`Args`] information, to configure
 /// benchmarks, and [`Main::start_time`], which is used by [`Main::printmsg()`].
-///
-/// Trait [`TimerTrait`] is used as trait object, not as type parameter. This may reduce accuracy of measurements by a
-/// few nanoseconds due to additional non-inlineable method call. Yet:
-/// - majority of benchmark cases is expected to last thousands or millions of nanoseconds
-/// - using this as trait object reduced compile time by almost **40%(!)** when compared to as generic type parameter.
-
 #[derive(Debug)]
 struct Main {
     /// Whether this binary was build in `Debug` or `Release` mode
@@ -2188,7 +2152,7 @@ impl Main {
     /// current permutation. Then it just returns benchmark result. This and all invoked methods may be executed in
     /// either single- or multi-threaded context.
     fn execute_benchmark(&self, permutation: &PermutationSpec) -> MyResult<BenchmarkResult> {
-        let mut timer = Self::create_timer(self.args.general.timer)?;
+        let mut timer = Timer::new(self.args.general.timer);
         let mut collection = Self::create_collection(permutation)?;
         self.benchmark_permutation(permutation, &mut collection, &mut timer)
     }
@@ -2282,18 +2246,6 @@ impl Main {
         resolve_hasher(permutation)
     }
 
-    /// Extract timer source type parameter and descend.
-    ///
-    /// [`Timer`] is created as a trait object. While sacrificing some nanoseconds of precision when measuring due to
-    /// extra call overhead, this saved nearly **40%(!)** of compile time compared to generic implementation.
-    #[allow(trivial_casts, reason = "Needed by ValueA::new_stable()")]
-    fn create_timer(timer_source: TimerSourceEnum) -> MyResult<Timer> {
-        match timer_source {
-            | TimerSourceEnum::Instant => alloc_stack!(dyn TimerTrait, [usize; 4], TimerSourceInstant::new()),
-            | TimerSourceEnum::SysTime => alloc_stack!(dyn TimerTrait, [usize; 4], TimerSourceSystemTime::new()),
-        }
-    }
-
     /// Benchmark a particular permutation. Collection with respective hasher and key type has been constructed before,
     /// yet content may be rebuilt.
     ///
@@ -2312,16 +2264,9 @@ impl Main {
             });
         }
         if self.args.general.warmup_ms > 0 {
-            self.benchmark_for_duration(
-                permutation,
-                collection,
-                string_keys.as_slice(),
-                u32::from(self.args.general.warmup_ms),
-                timer,
-                ExecutorWarmupMode::Warmup,
-            )?;
+            self.benchmark_for_duration(permutation, collection, string_keys.as_slice(), u32::from(self.args.general.warmup_ms), ExecutorWarmupMode::Warmup)?;
         }
-        self.benchmark_for_duration(permutation, collection, string_keys.as_slice(), u32::from(self.args.general.run_ms), timer, ExecutorWarmupMode::Measure)
+        self.benchmark_for_duration(permutation, collection, string_keys.as_slice(), u32::from(self.args.general.run_ms), ExecutorWarmupMode::Measure)
     }
 
     /// Run one permutation for up to the given maximum duration.
@@ -2338,7 +2283,6 @@ impl Main {
         collection: &mut Collection,
         string_keys: &[String],
         run_ms: u32,
-        timer: &mut Timer,
         warmup_mode: ExecutorWarmupMode,
     ) -> MyResult<BenchmarkResult> {
         let max_nanos = u64::from(run_ms) * 1_000_000;
@@ -2346,11 +2290,12 @@ impl Main {
         let curr_index = permutation.index;
         let max_index = self.num_permutations;
         let percent_done = curr_index as f32 * 100.0 / max_index as f32;
+        let timer_type = self.args.general.timer;
         permutation.op.prepare(permutation, collection, string_keys);
-        timer.restart();
-        while timer.get_elapsed_ns() < max_nanos {
+        let timer_permutation = Timer::new(timer_type);
+        while timer_permutation.get_elapsed_ns() < max_nanos {
             collection.clear();
-            let timer_iteration = timer.clone_dyn();
+            let timer_iteration = Timer::new(timer_type);
             permutation.op.execute(permutation, collection, string_keys);
             durations_ns.push(timer_iteration.get_elapsed_ns());
         }
