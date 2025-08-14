@@ -1206,8 +1206,6 @@ impl OutputFieldDescr {
 #[derive(Debug, Clone, PartialEq, PartialOrd, Copy)]
 #[repr(u8)]
 enum BenchmarkResultFieldSource {
-    // TODO: remove this type. Unneeded information.
-    // GlobalParms,
     PermutationSpec,
     PermutationResult,
 }
