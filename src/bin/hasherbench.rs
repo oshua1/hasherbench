@@ -1568,17 +1568,11 @@ impl KeyVal {
 }
 
 
-/// Wrapper to eliminate generic type parameter for [`standard HashSet`][std::collections::HashSet]
-#[derive(Debug, Clone)]
-struct CollectionStdHashSet<BH>(std::collections::HashSet<KeyVal, BH>);
-/// Wrapper to eliminate generic type parameter for [`Hashbrown HashSet`][hashbrown::HashSet]
-#[derive(Debug, Clone)]
-struct CollectionHashbrownHashSet<BH>(hashbrown::HashSet<KeyVal, BH>);
-#[derive(Debug, Clone)]
 /// Wrapper to eliminate generic type parameter for [`BTreeSet`]
-struct CollectionBTreeSet<BH>(BTreeSet<KeyVal>, PhantomData<BH>);
 #[derive(Debug, Clone)]
+struct CollectionBTreeSet<BH>(BTreeSet<KeyVal>, PhantomData<BH>);
 /// Wrapper to eliminate generic type parameter for [`LiteMap`]
+#[derive(Debug, Clone)]
 struct CollectionLitemap<BH>(LiteMap<KeyVal, ()>, PhantomData<BH>);
 /// Wrapper to eliminate generic type parameter for [`VecSet`][vecmap::VecSet]
 #[derive(Debug, Clone)]
@@ -1637,10 +1631,10 @@ trait CollectionTrait {
 /// - **$len**: implementation of [`len`][CollectionTrait::len()] method
 /// - **$clear**: implementation of [`clear`][CollectionTrait::clear()] method
 ///
-/// Usage example for [`std HashSet`][std::collections::HashSet] wrapper [`CollectionStdHashSet`]:
+/// Usage example for [`std BTreeSet`][std::collections::BTreeSet] wrapper:
 ///
-///     CollectionStdHashset<KEY,BH> =>
-///         create  = Self(std::collections::HashSet::<KEY, BH>::with_capacity_and_hasher(capacity, build_hasher)),
+///     CollectionBTreeSet<BH> =>
+///         create  = Self(BTreeSet::<KeyVal>::new(), PhantomData),
 ///         insert  = this.0.insert(key),
 ///         get     = this.0.get(key),
 ///         len     = this.0.len(),
@@ -1678,18 +1672,18 @@ macro_rules! impl_hashset_traits {
 }
 
 impl_hashset_traits! (this, key, capacity, build_hasher,
-    CollectionStdHashSet<BH> =>
-        create  = Self(std::collections::HashSet::<KeyVal,BH>::with_capacity_and_hasher(capacity, build_hasher)),
-        insert  = this.0.insert(key),
-        get     = this.0.get(key),
-        len     = this.0.len(),
-        clear   = this.0.clear();
-    CollectionHashbrownHashSet<BH> =>
-        create  = Self(hashbrown::HashSet::<KeyVal,BH>::with_capacity_and_hasher(capacity, build_hasher)),
-        insert  = this.0.insert(key),
-        get     = this.0.get(key),
-        len     = this.0.len(),
-        clear   = this.0.clear();
+    std::collections::HashSet<KeyVal,BH> =>
+        create  = std::collections::HashSet::<KeyVal,BH>::with_capacity_and_hasher(capacity, build_hasher),
+        insert  = this.insert(key),
+        get     = this.get(key),
+        len     = this.len(),
+        clear   = this.clear();
+    hashbrown::HashSet<KeyVal,BH> =>
+        create  = hashbrown::HashSet::<KeyVal,BH>::with_capacity_and_hasher(capacity, build_hasher),
+        insert  = this.insert(key),
+        get     = this.get(key),
+        len     = this.len(),
+        clear   = this.clear();
     CollectionBTreeSet<BH> =>
         create  = Self(BTreeSet::<KeyVal>::new(), PhantomData),
         insert  = this.0.insert(key),
@@ -2215,8 +2209,8 @@ impl Main {
             use RandomState as RS;
             match permutation.collection {
                 | CT::None      => create::<CollectionDummy             <BH>, BH>(permutation, build_hasher),
-                | CT::Std       => create::<CollectionStdHashSet        <BH>, BH>(permutation, build_hasher),
-                | CT::Hashbrown => create::<CollectionHashbrownHashSet  <BH>, BH>(permutation, build_hasher),
+                | CT::Std       => create::<std::collections::HashSet   <_, BH>, BH>(permutation, build_hasher),
+                | CT::Hashbrown => create::<hashbrown::HashSet          <_, BH>, BH>(permutation, build_hasher),
                 | CT::BtreeSet  => create::<CollectionBTreeSet          <RS>, RS>(permutation, RS::new()),
                 | CT::Litemap   => create::<CollectionLitemap           <RS>, RS>(permutation, RS::new()),
                 | CT::VecMap    => create::<CollectionVecSet            <RS>, RS>(permutation, RS::new()),
