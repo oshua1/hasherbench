@@ -1285,10 +1285,6 @@ impl BenchmarkResult {
             let nanos_sum;
             refinements += 1;
             last_len = durations_ns.len();
-            // First implementation. Obsoleted. Can become rather slow due to multiple iterator runs.
-            // nanos_min = *durations_ns.iter().min().unwrap_or(&u64::MAX) as u32;
-            // nanos_avg = durations_ns.iter().sum::<u64>() / durations_ns.len() as u64;
-            // nanos_max = *durations_ns.iter().max().unwrap_or(&0) as u32;
             (nanos_min, nanos_max, nanos_sum) =
                 durations_ns.iter().fold((u64::MAX, u64::MIN, 0), |(min, max, sum), elem| (min.min(*elem), max.max(*elem), sum + elem));
             nanos_avg = nanos_sum / durations_ns.len() as u64;
