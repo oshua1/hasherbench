@@ -6,7 +6,6 @@ Only Rust-native hashers are used, no wrappers for C/C++ implementations. Focuse
 
 This crate needs **Rust Nightly** compiler to build. The following unstable features are used:
 - `hashmap_internals` - for access to experimental `SipHasher13`
-- `random` - for access to [`core::random::Random`] and [`std::random::DefaultRandomSource`]
 
 ## Approaches
 

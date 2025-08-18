@@ -5,7 +5,6 @@
 //!
 //! This crate needs **Rust Nightly** compiler to build. The following unstable features are used:
 //! - `hashmap_internals` - for access to experimental `SipHasher13`
-//! - `random` - for access to [`core::random::Random`] and [`std::random::DefaultRandomSource`]
 //!
 //! # Features
 //!
@@ -132,7 +131,7 @@
 // IDEA: GnuPlot diagram creation feature? Yet, best type of graphs and parameter sets unclear.
 // IDEA: make fields to include in output selectable by command line argument
 
-#![feature(hashmap_internals, random)]
+#![feature(hashmap_internals)]
 #![allow(internal_features, deprecated, reason = "Needed or parts of this application")]
 #![allow(single_use_lifetimes, reason = "impl CollectionTrait for vector_map_VecSet::get() fails without (otherwise unneeded) lifetime annotation")]
 #![allow(clippy::unit_arg, reason = "More concise returning of Ok(()) results")]
@@ -152,7 +151,6 @@ use core::hash::Hasher;
 use core::hash::SipHasher;
 use core::hash::SipHasher13;
 use core::marker::PhantomData;
-use core::random::Random;
 use core::sync::atomic::AtomicU8;
 use core::time::Duration;
 use std::fs::File;
@@ -162,7 +160,6 @@ use std::io::stdout;
 use std::path::Path;
 use std::path::PathBuf;
 use std::process::ExitCode;
-use std::random::DefaultRandomSource;
 use std::time::Instant;
 use std::time::SystemTime;
 
@@ -2028,7 +2025,7 @@ impl Main {
             ram_demand as usize * 1024 > self.sysinfo.free_memory() as usize / 10 ||
             u64::from(*self.args.permutation_spec.length.iter().max().unwrap_or(&0)) *
                 u64::from(*self.args.permutation_spec.size.iter().max().unwrap_or(&0)) >
-                2_000_000 ||
+                200_000_000 ||
             self.args.general.threads as usize > self.sysinfo.cpus().len()) &&
             !self.args.general.yes
         {
@@ -2322,16 +2319,17 @@ impl Main {
     ///
     /// Used as keys to lookup. Length of string may be specified. Should not be less than 8 to
     /// avoid collisions. Uses weak but fast random algorithm and produces visible 7-bit Ascii
-    /// characters only.
+    /// characters in range between 0x21 and 0x7e only; roughly "Base94".
     #[allow(clippy::unwrap_used, reason = "Conversion to char guaranteed to succeed. Only using byte values in range 0x21..0x7f.")]
-    #[allow(clippy::integer_division, reason = "Loss of precision is the idea here")]
+    #[allow(clippy::needless_for_each, reason = "Want to save extra lines of 'for' loop")]
     fn prepare_random_string_keys(&self, string_length: u16, count: u32, timer: &mut Timer) -> Vec<String> {
         timer.restart();
-        let result = (0..count).fold(Vec::with_capacity(count as usize), |mut vec, _elem| {
-            vec.push((0..string_length).fold(String::with_capacity(string_length as usize), |mut string, _| {
-                string.push(char::from_u32(u32::from(<u8 as Random>::random(&mut DefaultRandomSource) % 0x5e) + 0x21).unwrap());
-                string
-            }));
+        let result: Vec<String> = (0..count).fold(Vec::with_capacity(count as usize), |mut vec, _elem| {
+            let mut random_bytes = Vec::<u8>::with_capacity(string_length as usize);
+            random_bytes.resize(count as usize, 0);
+            fastrand::fill(&mut random_bytes);
+            random_bytes.iter_mut().for_each(|b| *b = (*b % 0x5e) + 0x21);
+            vec.push(String::from_utf8_lossy(random_bytes.as_slice()).to_string());
             vec
         });
         self.printmsg(Verbosity::Ops, &format!("Preparing {count} random strings of length {string_length} took {} ms", timer.get_elapsed_ns() / 1_000_000));
