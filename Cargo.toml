@@ -84,7 +84,6 @@ adler2              = { version = "=2.0.1" }
 ahash               = { version = "=0.8.12" }
 chrono              = { version = "0.4.41", default-features = false, features = ["now", "alloc", "clock"]}
 clap                = { version = "4.5", features = [ "derive", "env" ] }
-criterion           = { version = "=3.0.1", package = "criterion2", default-features = false }
 farmhash            = { version = "=1.1.5" }
 fastrand            = { version = "=2.3.0" }
 foldhash            = { version = "0.1.5" }
@@ -111,6 +110,7 @@ wyhash              = { version = "0.6.0" }
 zwohash             = { version = "0.1.2" }
 
 [dev-dependencies]
+criterion           = { version = "=3.0.1", package = "criterion2", default-features = false }
 
 [[bin]]
 name                = "hasherbench"
