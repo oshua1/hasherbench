@@ -92,6 +92,7 @@ hash_hasher         = { version = "=2.0.4" }
 hashers             = { version = "=1.0.1" }
 highhash            = { version = "0.2.0" }
 highway             = { version = "=1.3.0" }
+indexmap            = { version = "2.11.0" }
 integer-hasher      = { version = "0.1.1" }
 litemap             = { version = "0.8.0" }
 metrohash           = { version = "=1.0.7" }
