@@ -336,6 +336,8 @@ enum CollectionType {
     Std,
     /// Rust port of Google's fast *`SwissTable`* set
     Hashbrown,
+    /// Indexmap, used by [`Servo`][https://doc.servo.org/servo/]
+    IndexMap,
     /// [`BTreeSet`] doesn't use hashing, yet may be faster in some use cases than genuine
     /// `HashSets`.
     BtreeSet,
@@ -353,6 +355,7 @@ enum CollectionType {
     | Self::None        => "None",
     | Self::Std         => "StdHashset",
     | Self::Hashbrown   => "Hashbrown",
+    | Self::IndexMap    => "Indexmap",
     | Self::BtreeSet    => "BTreeSet",
     | Self::Litemap     => "Litemap",
     | Self::VecMap      => "VecMap",
@@ -367,6 +370,7 @@ impl CollectionType {
                 Self::None,
                 Self::Std,
                 Self::Hashbrown,
+                Self::IndexMap,
                 Self::BtreeSet,
                 Self::Litemap,
                 Self::VecMap,
@@ -1677,6 +1681,12 @@ impl_hashset_traits! (this, key, capacity, build_hasher,
         get     = this.get(key),
         len     = this.len(),
         clear   = this.clear();
+    indexmap::IndexSet<KeyVal,BH> =>
+        create  = indexmap::IndexSet::<KeyVal,BH>::with_capacity_and_hasher(capacity, build_hasher),
+        insert  = this.insert(key),
+        get     = this.get(key),
+        len     = this.len(),
+        clear   = this.clear();
     CollectionBTreeSet<BH> =>
         create  = Self(BTreeSet::<KeyVal>::new(), PhantomData),
         insert  = this.0.insert(key),
@@ -2204,6 +2214,7 @@ impl Main {
                 | CT::None      => create::<CollectionDummy             <BH>, BH>(permutation, build_hasher),
                 | CT::Std       => create::<std::collections::HashSet   <_, BH>, BH>(permutation, build_hasher),
                 | CT::Hashbrown => create::<hashbrown::HashSet          <_, BH>, BH>(permutation, build_hasher),
+                | CT::IndexMap  => create::<indexmap::IndexSet          <_, BH>, BH>(permutation, build_hasher),
                 | CT::BtreeSet  => create::<CollectionBTreeSet          <RS>, RS>(permutation, RS::new()),
                 | CT::Litemap   => create::<CollectionLitemap           <RS>, RS>(permutation, RS::new()),
                 | CT::VecMap    => create::<CollectionVecSet            <RS>, RS>(permutation, RS::new()),
