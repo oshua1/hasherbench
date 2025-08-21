@@ -1854,7 +1854,7 @@ impl OperationsDescription {
         }
     }
 
-    /// Obatin static slice of operation description keys and value generation expression
+    /// Obtain static slice of operation description keys and value generation expression
     #[rustfmt::skip]
     #[allow (clippy::type_complexity, reason = "No custom type just because of tuple with fn pointer")]
     fn iter_key_value_pairs() -> impl Iterator<Item=&'static (&'static str, fn(&OperationsDescription)->String)> {
