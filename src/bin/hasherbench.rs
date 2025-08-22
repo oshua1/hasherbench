@@ -1182,6 +1182,7 @@ impl Debug for BenchmarkResult {
 
 /// Description and attributes of a result field to output
 #[derive(Clone, PartialEq)]
+#[allow (unpredictable_function_pointer_comparisons, reason = "This should be a stable comparison case")]
 struct OutputFieldDescr {
     /// Emitted name of field; must be JSON-compatible
     name:     &'static str,
@@ -2333,6 +2334,7 @@ impl Main {
     /// characters in range between 0x21 and 0x7e only; roughly "Base94".
     #[allow(clippy::unwrap_used, reason = "Conversion to char guaranteed to succeed. Only using byte values in range 0x21..0x7f.")]
     #[allow(clippy::needless_for_each, reason = "Want to save extra lines of 'for' loop")]
+    #[allow (clippy::integer_division, reason = "Loss of precision is idea here, div / 0 ruled out")]
     fn prepare_random_string_keys(&self, string_length: u16, count: u32, timer: &mut Timer) -> Vec<String> {
         timer.restart();
         let result: Vec<String> = (0..count).fold(Vec::with_capacity(count as usize), |mut vec, _elem| {
