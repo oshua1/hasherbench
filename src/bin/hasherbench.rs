@@ -2479,68 +2479,6 @@ impl Main {
     #[allow(clippy::integer_division, reason = "Precision loss irrelevant for rough output")]
     fn print_operations_summary(&self) -> bool {
         self.printmsg(Verbosity::Info, &OperationsDescription::create(self).to_string())
-        // TODO: remove this old implementation
-        // fn slice_to_string<T: IntoIterator>(slice: T) -> String
-        // where <T as IntoIterator>::Item: Display {
-        //     slice.into_iter().map(|slice| slice.to_string()).collect::<Vec<String>>().join(", ")
-        // }
-        // let args = &self.args;
-        // let perm = &args.permutation_spec;
-        // let num_permutations: u32 = self.num_permutations;
-        // let duration_ms = self.calc_duration_ms(num_permutations);
-        // let duration_perm_ms = self.args.general.run_ms;
-        // let duration_warmup_ms = self.args.general.warmup_ms;
-        // let minutes = duration_ms / 60000;
-        // let seconds = (duration_ms % 60000) / 1000;
-        // let ram_demand_kb = self.calc_ram_demand_kb();
-        // let num_threads: u8 = self.args.general.threads;
-        // let cpu_arch = sysinfo::System::cpu_arch();
-        // let cpu = self.sysinfo.cpus().first().ok_or_else(|| Error::new(ErrorKind::Internal, "No CPU info found!"))?;
-        // let cpu_vendor = cpu.vendor_id();
-        // let cpu_model = cpu.brand();
-        // let cpu_frequency = self.sysinfo.cpus().first().map_or(0, sysinfo::Cpu::frequency);
-        // let num_cpus = self.sysinfo.cpus().len();
-        // let free_ram_mb = self.sysinfo.available_memory() >> 20;
-        // let set_sizes = slice_to_string(&perm.size);
-        // let offsets = slice_to_string(&perm.offset);
-        // let steps = slice_to_string(&perm.step);
-        // let key_types = slice_to_string(&perm.keytype);
-        // let string_key_lengths = slice_to_string(&perm.length);
-        // let collections = slice_to_string(&perm.collection);
-        // let hashers = slice_to_string(&perm.hasher);
-        // let ops = slice_to_string(&perm.op);
-        // let percent = slice_to_string(&perm.hit_rate);
-        // let build_mode = self.build_mode;
-        // let mut exec_sort_order = self.permutations_sort_order.clone();
-        // exec_sort_order.reverse();
-        // for text_line in [
-        //     "Configured benchmarks summary:",
-        //     &format!("  Permutations:           {num_permutations}"),
-        //     &format!("  Execution ordering:     {exec_sort_order:?}"),
-        //     &format!("  Duration per perm:      {duration_perm_ms} ms"),
-        //     &format!("  Warmup per perm:        {duration_warmup_ms} ms"),
-        //     &format!("  Threads (parallelism):  {num_threads}"),
-        //     &format!("  Minimum bench duration: {minutes} minutes, {seconds} seconds"),
-        //     &format!("  Approx. RAM demand:     {ram_demand_kb} KB"),
-        //     "Selected parameters:",
-        //     &format!("  Set sizes:              {set_sizes}"),
-        //     &format!("  Offsets:                {offsets}"),
-        //     &format!("  Key steps:              {steps}"),
-        //     &format!("  Key types:              {key_types}"),
-        //     &format!("  String key lengths:     {string_key_lengths}"),
-        //     &format!("  Collections:            {collections}"),
-        //     &format!("  Hashers:                {hashers}"),
-        //     &format!("  Operations:             {ops}"),
-        //     &format!("  Hit rates %:            {percent}"),
-        //     "System info:",
-        //     &format!("  CPU:                    {cpu_arch} {cpu_vendor} {cpu_model}"),
-        //     &format!("  CPU frequency:          {cpu_frequency} MHz"),
-        //     &format!("  Number of CPUs (cores): {num_cpus}"),
-        //     &format!("  Free RAM:               {free_ram_mb} MB"),
-        //     &format!("Binary was built in {build_mode} mode"),
-        // ] {
-        //     self.printmsg(Verbosity::Info, text_line);
-        // }
     }
 
     /// Conditionally print text message to stdout, with datetime and runtime in ms prepended
