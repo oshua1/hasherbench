@@ -1232,7 +1232,8 @@ impl BenchmarkResult {
             OFD::new ("offset",             BRFS::PermutationSpec,   6, |bmr| bmr.permutation.offset.to_string()),
             OFD::new ("step",               BRFS::PermutationSpec,   6, |bmr| bmr.permutation.step.to_string()),
             OFD::new ("collection",         BRFS::PermutationSpec,  -20,|bmr| bmr.permutation.collection.to_string()),
-            OFD::new ("hasher",             BRFS::PermutationSpec,  -24,|bmr| bmr.permutation.hasher.to_string()),
+            OFD::new ("hasher",             BRFS::PermutationSpec,  -24,|bmr|
+                if bmr.permutation.collection.does_not_use_hasher() { "-".to_owned () } else { bmr.permutation.hasher.to_string() }),
             OFD::new ("key_type",           BRFS::PermutationSpec,  -8, |bmr| bmr.permutation.key_type.to_string()),
             OFD::new ("operation",          BRFS::PermutationSpec,  -6, |bmr| bmr.permutation.op.to_string()),
             OFD::new ("string_key_length",  BRFS::PermutationSpec,   5, |bmr| bmr.permutation.string_length.to_string()),
