@@ -1182,7 +1182,7 @@ impl Debug for BenchmarkResult {
 
 /// Description and attributes of a result field to output
 #[derive(Clone, PartialEq)]
-#[allow (unpredictable_function_pointer_comparisons, reason = "This should be a stable comparison case")]
+#[allow(unpredictable_function_pointer_comparisons, reason = "This should be a stable comparison case")]
 struct OutputFieldDescr {
     /// Emitted name of field; must be JSON-compatible
     name:     &'static str,
@@ -1222,10 +1222,10 @@ enum BenchmarkResultFieldSource {
 #[allow(clippy::integer_division, clippy::cast_possible_truncation, reason = "Loss of precision acceptable at nanoseconds resolution")]
 impl BenchmarkResult {
     /// Get iterator that returns [`OutputFieldDescr]`] of all fields to emit
-    #[rustfmt::skip]
     fn iter_fields() -> core::slice::Iter<'static, OutputFieldDescr> {
-        use OutputFieldDescr as OFD;
         use BenchmarkResultFieldSource as BRFS;
+        use OutputFieldDescr as OFD;
+        #[rustfmt::skip]
         static ITEMS: &[OutputFieldDescr] = &[
             OFD::new ("index",              BRFS::PermutationSpec,   4, |bmr| bmr.permutation.index.to_string()),
             OFD::new ("size",               BRFS::PermutationSpec,   6, |bmr| bmr.permutation.size.to_string()),
@@ -2334,7 +2334,7 @@ impl Main {
     /// characters in range between 0x21 and 0x7e only; roughly "Base94".
     #[allow(clippy::unwrap_used, reason = "Conversion to char guaranteed to succeed. Only using byte values in range 0x21..0x7f.")]
     #[allow(clippy::needless_for_each, reason = "Want to save extra lines of 'for' loop")]
-    #[allow (clippy::integer_division, reason = "Loss of precision is idea here, div / 0 ruled out")]
+    #[allow(clippy::integer_division, reason = "Loss of precision is idea here, div / 0 ruled out")]
     fn prepare_random_string_keys(&self, string_length: u16, count: u32, timer: &mut Timer) -> Vec<String> {
         timer.restart();
         let result: Vec<String> = (0..count).fold(Vec::with_capacity(count as usize), |mut vec, _elem| {
@@ -2477,9 +2477,7 @@ impl Main {
 
     /// Print summary of specified operation to stdout (if verbosity grants it)
     #[allow(clippy::integer_division, reason = "Precision loss irrelevant for rough output")]
-    fn print_operations_summary(&self) -> bool {
-        self.printmsg(Verbosity::Info, &OperationsDescription::create(self).to_string())
-    }
+    fn print_operations_summary(&self) -> bool { self.printmsg(Verbosity::Info, &OperationsDescription::create(self).to_string()) }
 
     /// Conditionally print text message to stdout, with datetime and runtime in ms prepended
     #[allow(clippy::print_stdout, reason = "This function is meant to print to stdout")]
